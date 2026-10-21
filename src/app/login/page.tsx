@@ -13,6 +13,8 @@ import {
   Briefcase
 } from "lucide-react";
 
+import { Logo } from "@/components/brand/Logo";
+
 export default function LoginPage() {
   const router = useRouter();
   const [role, setRole] = useState<"enterprise" | "consultancy">("consultancy");
@@ -60,29 +62,22 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-slate-50 py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen flex-col justify-center bg-background py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
-              <ShieldCheck className="h-6 w-6 text-white" />
-            </div>
-            <div className="text-left">
-              <span className="text-2xl font-bold tracking-tight text-primary">LIRA AI</span>
-              <span className="block text-xs font-semibold text-slate-500">
-                Acesso Seguro Multi-Tenant
-              </span>
-            </div>
+          <Link href="/">
+            <Logo size="lg" showSubtitle subtitleText="Acesso Seguro Multi-Tenant" />
           </Link>
         </div>
 
-        <h2 className="mt-6 text-center text-2xl font-extrabold tracking-tight text-primary">
+        <h2 className="mt-6 text-center text-2xl font-extrabold tracking-tight text-forest">
           Acesse sua conta corporativa
         </h2>
-        <p className="mt-2 text-center text-sm text-slate-600">
-          Gestão ambiental com isolamento de dados e conformidade legal
+        <p className="mt-2 text-center text-sm text-muted">
+          Gestão ambiental inteligente com isolamento de dados e conformidade legal
         </p>
       </div>
+
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
         <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-lg">
@@ -146,7 +141,7 @@ export default function LoginPage() {
                 <label className="block text-xs font-semibold text-slate-700">
                   Senha
                 </label>
-                <a href="#" className="text-xs font-medium text-cta hover:text-cta-hover">
+                <a href="#" className="text-xs font-medium text-environmental hover:underline">
                   Esqueceu a senha?
                 </a>
               </div>
@@ -156,15 +151,15 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="block w-full rounded-lg border border-border px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-forest focus:outline-none focus:ring-2 focus:ring-forest/20"
                 />
               </div>
             </div>
 
             {/* Seletor de Cliente Inicial para Consultorias (Tenant Switcher) */}
             {role === "consultancy" ? (
-              <div className="rounded-xl border border-sky-100 bg-sky-50/60 p-3.5">
-                <label className="block text-xs font-bold text-sky-900">
+              <div className="rounded-xl border border-sprout/50 bg-sprout-light/60 p-3.5">
+                <label className="block text-xs font-bold text-forest">
                   Selecione o Cliente Inicial (Carteira Ativa)
                 </label>
                 <div className="mt-2 space-y-2">
@@ -173,8 +168,8 @@ export default function LoginPage() {
                       key={c.id}
                       className={`flex items-center justify-between rounded-lg border p-2.5 text-xs transition-colors cursor-pointer ${
                         selectedClient === c.id
-                          ? "border-cta bg-white text-primary shadow-xs"
-                          : "border-slate-200 bg-white/80 text-slate-600 hover:bg-white"
+                          ? "border-environmental bg-white text-forest shadow-xs ring-1 ring-environmental/30"
+                          : "border-border bg-white/80 text-slate-600 hover:bg-white"
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -183,14 +178,14 @@ export default function LoginPage() {
                           name="client_selection"
                           checked={selectedClient === c.id}
                           onChange={() => setSelectedClient(c.id)}
-                          className="h-3.5 w-3.5 text-cta focus:ring-cta"
+                          className="h-3.5 w-3.5 text-environmental focus:ring-environmental"
                         />
                         <div>
                           <span className="font-semibold block">{c.name}</span>
-                          <span className="text-slate-500 text-[11px]">{c.units}</span>
+                          <span className="text-muted text-[11px]">{c.units}</span>
                         </div>
                       </div>
-                      <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                      <span className="rounded bg-sprout/20 px-2 py-0.5 text-[10px] font-semibold text-forest">
                         {c.licensesCount} licenças
                       </span>
                     </label>

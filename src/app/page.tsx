@@ -12,36 +12,29 @@ import {
   Layers,
   ChevronRight
 } from "lucide-react";
+import { Logo } from "@/components/brand/Logo";
 
 export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* Barra de Navegacao Flutuante */}
-      <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/90 backdrop-blur-md">
+    <div className="flex min-h-screen flex-col bg-background">
+      {/* Barra de Navegacao Flutuante Oficial Lira AI */}
+      <header className="sticky top-0 z-50 w-full border-b border-border bg-white/95 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white shadow-sm">
-              <ShieldCheck className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <span className="text-xl font-bold tracking-tight text-primary">LIRA AI</span>
-              <span className="ml-1.5 rounded bg-slate-100 px-1.5 py-0.5 text-xs font-semibold text-slate-600">
-                SaaS Ambiental
-              </span>
-            </div>
-          </div>
+          <Link href="/" className="flex items-center">
+            <Logo size="md" showSubtitle subtitleText="Gestão Ambiental Inteligente" />
+          </Link>
 
           <nav className="hidden items-center gap-8 md:flex">
-            <a href="#core-compliance" className="text-sm font-medium text-secondary hover:text-primary transition-colors">
+            <a href="#core-compliance" className="text-sm font-semibold text-secondary hover:text-environmental transition-colors">
               Core Compliance
             </a>
-            <a href="#ia-extract" className="text-sm font-medium text-secondary hover:text-primary transition-colors">
+            <a href="#ia-extract" className="text-sm font-semibold text-secondary hover:text-environmental transition-colors">
               LIRA Extract
             </a>
-            <a href="#perfis" className="text-sm font-medium text-secondary hover:text-primary transition-colors">
+            <a href="#perfis" className="text-sm font-semibold text-secondary hover:text-environmental transition-colors">
               Soluções
             </a>
-            <a href="#seguranca" className="text-sm font-medium text-secondary hover:text-primary transition-colors">
+            <a href="#seguranca" className="text-sm font-semibold text-secondary hover:text-environmental transition-colors">
               Segurança e RLS
             </a>
           </nav>
@@ -49,12 +42,12 @@ export default function HomePage() {
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-slate-100 transition-colors cursor-pointer"
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-forest hover:bg-forest/5 transition-colors cursor-pointer"
             >
               Acessar Conta
             </Link>
             <Link
-              href="/contato"
+              href="/login"
               className="btn-primary text-sm shadow-sm"
             >
               Falar com Especialista
@@ -64,21 +57,22 @@ export default function HomePage() {
         </div>
       </header>
 
+
       <main className="flex-1">
         {/* Hero Section: Enterprise Gateway */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50 py-20 lg:py-28">
+        <section className="relative overflow-hidden bg-gradient-to-b from-background via-white to-background py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-3xl text-center">
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-4 py-1.5 text-xs font-semibold text-cta">
-                <Sparkles className="h-3.5 w-3.5" />
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-environmental/20 bg-environmental/10 px-4 py-1.5 text-xs font-semibold text-forest">
+                <Sparkles className="h-3.5 w-3.5 text-environmental" />
                 <span>Release 1.0: Gestão Inteligente de Licenças e Condicionantes</span>
               </div>
 
-              <h1 className="text-4xl font-extrabold tracking-tight text-primary sm:text-5xl lg:text-6xl">
+              <h1 className="text-4xl font-extrabold tracking-tight text-forest sm:text-5xl lg:text-6xl">
                 Conformidade ambiental com rigor legal e suporte de IA
               </h1>
 
-              <p className="mt-6 text-lg leading-relaxed text-slate-600 sm:text-xl">
+              <p className="mt-6 text-lg leading-relaxed text-muted sm:text-xl">
                 Elimine o risco de multas e interdições operacionais. Monitore prazos de renovação da Lei Complementar 140/2011, delegue tarefas com evidências e extraia condicionantes de licenças com revisão humana assistida.
               </p>
 
@@ -97,6 +91,7 @@ export default function HomePage() {
                   Ver Demonstração de Telas
                 </a>
               </div>
+
 
               {/* Selos de Confianca */}
               <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-xs font-medium text-slate-500">
@@ -345,24 +340,20 @@ export default function HomePage() {
         </section>
       </main>
 
-      {/* Rodape Corporativo */}
-      <footer className="border-t border-slate-200 bg-white py-12">
+      {/* Rodape Corporativo Oficial Lira AI */}
+      <footer className="border-t border-border bg-white py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
-                <ShieldCheck className="h-5 w-5" />
-              </div>
-              <span className="text-base font-bold text-primary">LIRA AI</span>
-              <span className="text-xs text-slate-500">Gestão e Conformidade Ambiental</span>
-            </div>
-            <p className="text-xs text-slate-500">
-              © 2026 LIRA AI. Todos os direitos reservados. Conformidade ambiental com rigor legal e segurança.
+            <Link href="/" className="flex items-center">
+              <Logo size="sm" showSubtitle subtitleText="Gestão e Conformidade Ambiental" />
+            </Link>
+            <p className="text-xs text-muted">
+              © 2026 Lira AI. Todos os direitos reservados. Conformidade ambiental inteligente com rigor legal.
             </p>
             <div className="flex items-center gap-6 text-xs font-medium text-slate-600">
-              <a href="#" className="hover:text-primary transition-colors">Termos de Uso</a>
-              <a href="#" className="hover:text-primary transition-colors">Privacidade e LGPD</a>
-              <a href="#" className="hover:text-primary transition-colors">Suporte Técnico</a>
+              <a href="#" className="hover:text-forest transition-colors">Termos de Uso</a>
+              <a href="#" className="hover:text-forest transition-colors">Privacidade e LGPD</a>
+              <a href="#" className="hover:text-forest transition-colors">Suporte Técnico</a>
             </div>
           </div>
         </div>
@@ -370,3 +361,4 @@ export default function HomePage() {
     </div>
   );
 }
+

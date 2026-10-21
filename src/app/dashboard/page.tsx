@@ -27,8 +27,12 @@ import {
   History,
   FolderOpen
 } from "lucide-react";
+import { Logo } from "@/components/brand/Logo";
+import { Symbol } from "@/components/brand/Symbol";
+import { AIAvatar } from "@/components/brand/AIAvatar";
 
 export default function DashboardPage() {
+
   const [activeTenant, setActiveTenant] = useState("org-1");
   const [userName, setUserName] = useState("João Silva (Consultor Líder)");
   const [activeTab, setActiveTab] = useState<
@@ -351,25 +355,22 @@ export default function DashboardPage() {
   });
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50">
-      {/* Top Header */}
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white">
+    <div className="flex min-h-screen flex-col bg-background">
+      {/* Top Header Institucional Lira AI */}
+      <header className="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white shadow-xs">
-                <ShieldCheck className="h-5 w-5" />
-              </div>
-              <span className="text-lg font-bold tracking-tight text-primary">LIRA AI</span>
+            <Link href="/" className="flex items-center">
+              <Logo size="sm" showSubtitle subtitleText="Gestão Ambiental Inteligente" />
             </Link>
 
             {/* Tenant Switcher Interativo com Dados Reais */}
-            <div className="hidden sm:flex items-center gap-2 border-l border-slate-200 pl-6">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Organização:</span>
+            <div className="hidden sm:flex items-center gap-2 border-l border-border pl-6">
+              <span className="text-xs font-semibold text-muted uppercase tracking-wider">Organização:</span>
               <select
                 value={activeTenant}
                 onChange={(e) => setActiveTenant(e.target.value)}
-                className="rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-3 pr-8 text-xs font-bold text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                className="rounded-lg border border-border bg-background py-1.5 pl-3 pr-8 text-xs font-bold text-forest focus:border-forest focus:outline-none focus:ring-2 focus:ring-forest/20 cursor-pointer"
               >
                 {allOrganizations.map((o: any) => (
                   <option key={o.id} value={o.id}>
@@ -380,7 +381,7 @@ export default function DashboardPage() {
               <button
                 onClick={() => setIsNewOrgModalOpen(true)}
                 title="Cadastrar Nova Empresa ou Cliente"
-                className="rounded-md border border-slate-200 bg-white p-1.5 text-slate-600 hover:text-cta hover:border-cta cursor-pointer transition-colors"
+                className="rounded-md border border-border bg-white p-1.5 text-muted hover:text-environmental hover:border-environmental cursor-pointer transition-colors"
               >
                 <Plus className="h-3.5 w-3.5" />
               </button>
@@ -388,21 +389,21 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs">
-              <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
+            <div className="flex items-center gap-2.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs">
+              <div className="h-2 w-2 rounded-full bg-environmental"></div>
               <input
                 type="text"
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
                 title="Clique para alterar o nome do operador de teste"
-                className="bg-transparent font-semibold text-slate-800 border-none outline-none focus:ring-1 focus:ring-primary text-xs w-48"
+                className="bg-transparent font-semibold text-forest border-none outline-none focus:ring-1 focus:ring-forest text-xs w-48"
               />
             </div>
 
             <Link
               href="/login"
               title="Trocar de Conta"
-              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-primary transition-colors cursor-pointer"
+              className="rounded-lg p-2 text-muted hover:bg-forest/5 hover:text-forest transition-colors cursor-pointer"
             >
               <LogOut className="h-4 w-4" />
             </Link>
@@ -410,14 +411,14 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* Navegacao de Modulos Completa */}
-      <div className="bg-white border-b border-slate-200">
+      {/* Navegacao de Modulos Completa Lira AI */}
+      <div className="bg-white border-b border-border">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <nav className="flex space-x-1 sm:space-x-4 overflow-x-auto py-2 text-xs font-semibold">
+          <nav className="flex space-x-1 sm:space-x-3 overflow-x-auto py-2 text-xs font-semibold">
             <button
               onClick={() => setActiveTab("overview")}
               className={`rounded-lg px-3 py-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
-                activeTab === "overview" ? "bg-primary text-white" : "text-slate-600 hover:bg-slate-100"
+                activeTab === "overview" ? "bg-forest text-white shadow-xs" : "text-muted hover:bg-forest/5 hover:text-forest"
               }`}
             >
               <Layers className="h-3.5 w-3.5" />
@@ -426,7 +427,7 @@ export default function DashboardPage() {
             <button
               onClick={() => setActiveTab("org")}
               className={`rounded-lg px-3 py-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
-                activeTab === "org" ? "bg-primary text-white" : "text-slate-600 hover:bg-slate-100"
+                activeTab === "org" ? "bg-forest text-white shadow-xs" : "text-muted hover:bg-forest/5 hover:text-forest"
               }`}
             >
               <Building2 className="h-3.5 w-3.5" />
@@ -435,7 +436,7 @@ export default function DashboardPage() {
             <button
               onClick={() => setActiveTab("licenses")}
               className={`rounded-lg px-3 py-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
-                activeTab === "licenses" ? "bg-primary text-white" : "text-slate-600 hover:bg-slate-100"
+                activeTab === "licenses" ? "bg-forest text-white shadow-xs" : "text-muted hover:bg-forest/5 hover:text-forest"
               }`}
             >
               <FileCheck2 className="h-3.5 w-3.5" />
@@ -444,7 +445,7 @@ export default function DashboardPage() {
             <button
               onClick={() => setActiveTab("conditions")}
               className={`rounded-lg px-3 py-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
-                activeTab === "conditions" ? "bg-primary text-white" : "text-slate-600 hover:bg-slate-100"
+                activeTab === "conditions" ? "bg-forest text-white shadow-xs" : "text-muted hover:bg-forest/5 hover:text-forest"
               }`}
             >
               <ShieldCheck className="h-3.5 w-3.5" />
@@ -453,7 +454,7 @@ export default function DashboardPage() {
             <button
               onClick={() => setActiveTab("tasks")}
               className={`rounded-lg px-3 py-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
-                activeTab === "tasks" ? "bg-primary text-white" : "text-slate-600 hover:bg-slate-100"
+                activeTab === "tasks" ? "bg-forest text-white shadow-xs" : "text-muted hover:bg-forest/5 hover:text-forest"
               }`}
             >
               <ListTodo className="h-3.5 w-3.5" />
@@ -462,7 +463,7 @@ export default function DashboardPage() {
             <button
               onClick={() => setActiveTab("waste")}
               className={`rounded-lg px-3 py-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
-                activeTab === "waste" ? "bg-primary text-white" : "text-slate-600 hover:bg-slate-100"
+                activeTab === "waste" ? "bg-forest text-white shadow-xs" : "text-muted hover:bg-forest/5 hover:text-forest"
               }`}
             >
               <Truck className="h-3.5 w-3.5" />
@@ -471,7 +472,7 @@ export default function DashboardPage() {
             <button
               onClick={() => setActiveTab("inspections")}
               className={`rounded-lg px-3 py-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
-                activeTab === "inspections" ? "bg-primary text-white" : "text-slate-600 hover:bg-slate-100"
+                activeTab === "inspections" ? "bg-forest text-white shadow-xs" : "text-muted hover:bg-forest/5 hover:text-forest"
               }`}
             >
               <ClipboardCheck className="h-3.5 w-3.5" />
@@ -480,7 +481,7 @@ export default function DashboardPage() {
             <button
               onClick={() => setActiveTab("audits")}
               className={`rounded-lg px-3 py-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
-                activeTab === "audits" ? "bg-primary text-white" : "text-slate-600 hover:bg-slate-100"
+                activeTab === "audits" ? "bg-forest text-white shadow-xs" : "text-muted hover:bg-forest/5 hover:text-forest"
               }`}
             >
               <Award className="h-3.5 w-3.5" />
@@ -489,16 +490,18 @@ export default function DashboardPage() {
             <button
               onClick={() => setActiveTab("extract")}
               className={`rounded-lg px-3 py-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
-                activeTab === "extract" ? "bg-primary text-white" : "text-slate-600 hover:bg-slate-100"
+                activeTab === "extract"
+                  ? "bg-forest text-digital font-bold shadow-xs border border-digital/40"
+                  : "text-muted hover:bg-forest/5 hover:text-forest"
               }`}
             >
-              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+              <AIAvatar size={16} isProcessing={activeTab === "extract"} />
               <span>LIRA Extract (IA)</span>
             </button>
             <button
               onClick={() => setActiveTab("logs")}
               className={`rounded-lg px-3 py-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
-                activeTab === "logs" ? "bg-primary text-white" : "text-slate-600 hover:bg-slate-100"
+                activeTab === "logs" ? "bg-forest text-white shadow-xs" : "text-muted hover:bg-forest/5 hover:text-forest"
               }`}
             >
               <History className="h-3.5 w-3.5" />
@@ -510,9 +513,9 @@ export default function DashboardPage() {
 
       {/* Mensagens de Notificacao Toast */}
       {toastMessage ? (
-        <div className="fixed bottom-4 right-4 z-50 flex items-center justify-between rounded-xl bg-primary text-white px-4 py-3 shadow-xl text-xs">
+        <div className="fixed bottom-4 right-4 z-50 flex items-center justify-between rounded-xl bg-forest text-white px-4 py-3 shadow-xl text-xs border border-environmental/40">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            <CheckCircle2 className="h-4 w-4 text-digital" />
             <span>{toastMessage}</span>
           </div>
           <button onClick={() => setToastMessage(null)} className="ml-4 text-slate-300 hover:text-white cursor-pointer">
@@ -520,6 +523,7 @@ export default function DashboardPage() {
           </button>
         </div>
       ) : null}
+
 
       <main className="mx-auto max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8 w-full">
         {/* ABA OVERVIEW: Painel de Indicadores Gerais */}
@@ -547,58 +551,59 @@ export default function DashboardPage() {
 
             {/* Cartoes Metricos com dados reais do banco */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-5 shadow-xs">
+              <div className="rounded-xl border border-environmental/30 bg-environmental/10 p-5 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-900">Licenças Vigentes</span>
-                  <FileCheck2 className="h-5 w-5 text-emerald-700" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-forest">Licenças Vigentes</span>
+                  <FileCheck2 className="h-5 w-5 text-environmental" />
                 </div>
                 <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-3xl font-extrabold text-slate-900">
+                  <span className="text-3xl font-extrabold text-forest">
                     {licenses.filter((l: any) => l.status === "Vigente").length}
                   </span>
-                  <span className="text-xs font-semibold text-emerald-700">Conformes</span>
+                  <span className="text-xs font-bold text-environmental">Conformes</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-5 shadow-xs">
+              <div className="rounded-xl border border-cerrado/30 bg-cerrado/10 p-5 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-amber-900">Alerta 120 Dias (LC 140)</span>
-                  <Clock className="h-5 w-5 text-amber-700" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-cerrado">Alerta 120 Dias (LC 140)</span>
+                  <Clock className="h-5 w-5 text-cerrado" />
                 </div>
                 <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-3xl font-extrabold text-slate-900">
+                  <span className="text-3xl font-extrabold text-forest">
                     {licenses.filter((l: any) => l.status === "Alerta Renovação").length}
                   </span>
-                  <span className="text-xs font-semibold text-amber-700">Ação Tempestiva</span>
+                  <span className="text-xs font-bold text-cerrado">Ação Tempestiva</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-sky-200 bg-sky-50/70 p-5 shadow-xs">
+              <div className="rounded-xl border border-water/30 bg-water/10 p-5 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-sky-900">Em Renovação</span>
-                  <FileText className="h-5 w-5 text-sky-700" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-water">Em Renovação</span>
+                  <FileText className="h-5 w-5 text-water" />
                 </div>
                 <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-3xl font-extrabold text-slate-900">
+                  <span className="text-3xl font-extrabold text-forest">
                     {licenses.filter((l: any) => l.status === "Em Renovação").length}
                   </span>
-                  <span className="text-xs font-semibold text-sky-700">Prorrogadas por Lei</span>
+                  <span className="text-xs font-bold text-water">Prorrogadas por Lei</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-5 shadow-xs">
+              <div className="rounded-xl border border-forest/20 bg-forest/5 p-5 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-blue-900">Fila Quatro-Olhos</span>
-                  <ShieldCheck className="h-5 w-5 text-blue-700" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-forest">Fila Quatro-Olhos</span>
+                  <ShieldCheck className="h-5 w-5 text-forest" />
                 </div>
                 <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-3xl font-extrabold text-slate-900">
+                  <span className="text-3xl font-extrabold text-forest">
                     {conditions.filter((c: any) => c.status === "Aguardando Revisão").length}
                   </span>
-                  <span className="text-xs font-semibold text-blue-700">Aguardando Avaliação</span>
+                  <span className="text-xs font-bold text-forest">Aguardando Avaliação</span>
                 </div>
               </div>
             </div>
+
 
             {/* Painel de Acoes Recentes */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1091,34 +1096,37 @@ export default function DashboardPage() {
 
         {/* ABA LIRA EXTRACT (IA) */}
         {activeTab === "extract" ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="rounded-2xl border border-border bg-white p-6 shadow-xs space-y-4">
+            <div className="flex items-center justify-between border-b border-border pb-3">
               <div>
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-800">
-                  <Sparkles className="h-3.5 w-3.5 text-cta" />
+                <div className="badge-ai">
+                  <AIAvatar size={16} isProcessing={true} />
                   <span>Extração Assistida por IA com Grounding Textual</span>
                 </div>
-                <h3 className="text-lg font-bold text-primary mt-1">Conferência em Tela Dividida (Split-Screen)</h3>
+                <h3 className="text-lg font-bold text-forest mt-1.5">Conferência em Tela Dividida (Split-Screen)</h3>
               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3 font-mono text-xs">
-                <span className="font-bold text-slate-700 block border-b pb-1 font-sans">Documento PDF da Licença CETESB nº 4509/2023 (Pág. 3)</span>
-                <p className="text-slate-500">
+              <div className="rounded-xl border border-border bg-background p-4 space-y-3 font-mono text-xs">
+                <span className="font-bold text-forest block border-b border-border pb-1 font-sans">Documento PDF da Licença CETESB nº 4509/2023 (Pág. 3)</span>
+                <p className="text-muted">
                   Artigo 8º: O empreendimento deverá implantar sistema de recirculação de águas pluviais...
                 </p>
-                <div className="bg-amber-100 border border-amber-300 p-2.5 rounded text-amber-900 font-semibold">
+                <div className="bg-cerrado/10 border border-cerrado/40 p-2.5 rounded text-forest font-semibold">
                   [Cláusula Identificada pela IA]: "Artigo 9º: Fica o titular obrigado a comprovar semestralmente a destinação de 100% dos resíduos perigosos através do sistema SIGOR com anexação de CDFs."
                 </div>
               </div>
 
-              <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-4 space-y-3">
-                <span className="font-bold text-blue-900 block border-b border-blue-200 pb-1 text-xs">Condicionante Estruturada pela IA</span>
-                <div className="bg-white p-3.5 rounded-lg border border-slate-200 space-y-2 text-xs">
-                  <span className="font-bold text-primary">Condicionante 9.1: Destinação de Resíduos Perigosos</span>
-                  <p className="text-slate-600">Comprovar semestralmente a destinação correta via SIGOR com anexação de CDFs.</p>
-                  <p className="text-[11px] text-slate-500">Periodicidade: Semestral | Prazo Sugerido: 30/11/2026</p>
+              <div className="rounded-xl border border-digital/40 bg-digital/5 p-4 space-y-3">
+                <div className="flex items-center justify-between border-b border-digital/30 pb-1">
+                  <span className="font-bold text-forest text-xs">Condicionante Estruturada pela IA</span>
+                  <span className="text-[10px] uppercase font-bold text-environmental bg-environmental/15 px-2 py-0.5 rounded">Sugestão Preliminar</span>
+                </div>
+                <div className="bg-white p-3.5 rounded-lg border border-border space-y-2 text-xs">
+                  <span className="font-bold text-forest">Condicionante 9.1: Destinação de Resíduos Perigosos</span>
+                  <p className="text-muted">Comprovar semestralmente a destinação correta via SIGOR com anexação de CDFs.</p>
+                  <p className="text-[11px] text-muted">Periodicidade: Semestral | Prazo Sugerido: 30/11/2026</p>
                 </div>
                 <button
                   onClick={async () => {
@@ -1144,6 +1152,7 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : null}
+
 
         {/* ABA TRILHA DE AUDITORIA (LOGS) */}
         {activeTab === "logs" ? (

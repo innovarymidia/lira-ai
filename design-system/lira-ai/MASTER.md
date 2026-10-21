@@ -1,204 +1,156 @@
-# Design System Master File
+# Design System Master File: Lira AI
 
-> **LOGIC:** When building a specific page, first check `design-system/pages/[page-name].md`.
-> If that file exists, its rules **override** this Master file.
-> If not, strictly follow the rules below.
-
----
-
-**Project:** LIRA AI
-**Generated:** 2026-10-21 12:14:10
-**Category:** B2B Service
+> **LOGIC:** Regras globais de identidade visual e design system para a plataforma Lira AI.
+> Siga rigorosamente os tokens semanticos e as diretrizes do conceito Biosfera Conectada.
 
 ---
 
-## Global Rules
+**Projeto:** Lira AI
+**Conceito da Marca:** Biosfera Conectada (Natureza, Tecnologia, IA, Sustentabilidade e Gestao)
+**Categoria:** B2B SaaS de Gestao Ambiental Inteligente
 
-### Color Palette
+---
 
-| Role | Hex | CSS Variable |
-|------|-----|--------------|
-| Primary | `#0F172A` | `--color-primary` |
-| Secondary | `#334155` | `--color-secondary` |
-| CTA/Accent | `#0369A1` | `--color-cta` |
-| Background | `#F8FAFC` | `--color-background` |
-| Text | `#020617` | `--color-text` |
+## 1. Cores Oficiais e Tokens Semanticos
 
-**Color Notes:** Professional navy + blue CTA
+### Cores Principais
 
-### Typography
+| Papel | Nome | Hex | Variavel CSS | Aplicacao |
+|-------|------|-----|--------------|-----------|
+| Primaria Institucional | Verde-floresta | `#123F35` | `--color-brand-primary` | Navegacao, menus, cabecalhos, autoridade |
+| Primaria Interacao | Verde ambiental | `#21845B` | `--color-brand-secondary` | Botoes principais, links de acao, selecoes |
+| Tecnologia e IA | Verde digital | `#65D6AD` | `--color-brand-accent` | Destaques de IA, marcadores, processamento |
+| Apoio e Graficos | Verde broto | `#B8E0A5` | `--color-brand-sprout` | Fundos suaves, ilustracoes, metricas |
 
-- **Heading Font:** Plus Jakarta Sans
-- **Body Font:** Plus Jakarta Sans
-- **Mood:** friendly, modern, saas, clean, approachable, professional
-- **Google Fonts:** [Plus Jakarta Sans + Plus Jakarta Sans](https://fonts.google.com/share?selection.family=Plus+Jakarta+Sans:wght@300;400;500;600;700)
+### Cores Complementares
 
-**CSS Import:**
+| Papel | Nome | Hex | Variavel CSS | Aplicacao |
+|-------|------|-----|--------------|-----------|
+| Informativo / Hidrico | Azul-agua | `#176B82` | `--color-water` | Graficos de recursos hidricos, informacoes |
+| Atencao / Alerta | Dourado Cerrado | `#D9A441` | `--color-cerrado` | Avisos moderados, prazos intermediarios |
+| Solo / Territorio | Terra | `#A65B3F` | `--color-earth` | Indicadores de solo, georreferenciamento |
+
+### Cores Neutras e Superficies
+
+| Papel | Hex | Variavel CSS | Aplicacao |
+|-------|-----|--------------|-----------|
+| Fundo Geral | `#F5F7F5` | `--color-background` | Fundo claro padrao da aplicacao |
+| Superficie / Cartoes | `#FFFFFF` | `--color-surface` | Paineis, modais, cards de dados |
+| Bordas Discretas | `#E3E9E4` | `--color-border` | Divisores, molduras de campos |
+| Texto Principal | `#26352F` | `--color-text-primary` | Titulos, cabecalhos, dados |
+| Texto Secundario | `#66736B` | `--color-text-secondary` | Rotulos, legendas, apoios |
+
+---
+
+## 2. Tipografia
+
+- **Familia Primaria:** Inter (Google Fonts)
+- **Familia Secundaria:** Plus Jakarta Sans
+- **Legibilidade:** Prioridade para alta densidade de dados, tabelas e indicadores corporativos.
+- **Hierarquia:**
+  - H1: 2rem / 32px a 2.5rem / 40px, bold (700)
+  - H2: 1.5rem / 24px a 1.875rem / 30px, semibold (600)
+  - H3: 1.25rem / 20px, semibold (600)
+  - Corpo: 0.875rem / 14px a 1rem / 16px, regular (400)
+  - Rotulos e Tabelas: 0.75rem / 12px a 0.875rem / 14px, medium (500) e semibold (600)
+
+---
+
+## 3. Conceito da Marca: Biosfera Conectada
+
+- **Folha Conectada:** Simboliza a natureza, preservacao e sustentabilidade, unida a linhas e nos discretos de telemetria, dados e rastreabilidade digital.
+- **Orbita Circular:** Simboliza o planeta, os ecossistemas interconectados e a visao sistemica da gestao ambiental corporativa.
+- **Composicao Tipografica:** "Lira" com destaque institucional e "AI" com tratamento tecnologico discreto e elegante.
+
+---
+
+## 4. Componentes Padronizados
+
+### Botoes
+
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700');
-```
-
-### Spacing Variables
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--space-xs` | `4px` / `0.25rem` | Tight gaps |
-| `--space-sm` | `8px` / `0.5rem` | Icon gaps, inline spacing |
-| `--space-md` | `16px` / `1rem` | Standard padding |
-| `--space-lg` | `24px` / `1.5rem` | Section padding |
-| `--space-xl` | `32px` / `2rem` | Large gaps |
-| `--space-2xl` | `48px` / `3rem` | Section margins |
-| `--space-3xl` | `64px` / `4rem` | Hero padding |
-
-### Shadow Depths
-
-| Level | Value | Usage |
-|-------|-------|-------|
-| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` | Subtle lift |
-| `--shadow-md` | `0 4px 6px rgba(0,0,0,0.1)` | Cards, buttons |
-| `--shadow-lg` | `0 10px 15px rgba(0,0,0,0.1)` | Modals, dropdowns |
-| `--shadow-xl` | `0 20px 25px rgba(0,0,0,0.15)` | Hero images, featured cards |
-
----
-
-## Component Specs
-
-### Buttons
-
-```css
-/* Primary Button */
+/* Botao Principal: Verde Ambiental */
 .btn-primary {
-  background: #0369A1;
-  color: white;
-  padding: 12px 24px;
+  background-color: #21845B;
+  color: #FFFFFF;
+  padding: 10px 20px;
   border-radius: 8px;
   font-weight: 600;
   transition: all 200ms ease;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
-
 .btn-primary:hover {
-  opacity: 0.9;
+  background-color: #1A6B4A;
   transform: translateY(-1px);
 }
 
-/* Secondary Button */
-.btn-secondary {
-  background: transparent;
-  color: #0F172A;
-  border: 2px solid #0F172A;
-  padding: 12px 24px;
+/* Botao Institucional: Verde Floresta */
+.btn-forest {
+  background-color: #123F35;
+  color: #FFFFFF;
+  padding: 10px 20px;
   border-radius: 8px;
   font-weight: 600;
   transition: all 200ms ease;
   cursor: pointer;
 }
-```
+.btn-forest:hover {
+  background-color: #0E322A;
+}
 
-### Cards
-
-```css
-.card {
-  background: #F8FAFC;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: var(--shadow-md);
+/* Botao Secundario / Outline */
+.btn-secondary {
+  background-color: transparent;
+  color: #123F35;
+  border: 1px solid #E3E9E4;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
   transition: all 200ms ease;
   cursor: pointer;
 }
-
-.card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
+.btn-secondary:hover {
+  background-color: #EBF6F1;
+  border-color: #21845B;
+  color: #21845B;
 }
 ```
 
-### Inputs
+### Cartoes e Modais
 
 ```css
-.input {
-  padding: 12px 16px;
-  border: 1px solid #E2E8F0;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 200ms ease;
+.card-compliance {
+  background-color: #FFFFFF;
+  border: 1px solid #E3E9E4;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(18, 63, 53, 0.04);
+  transition: all 200ms ease;
 }
 
-.input:focus {
-  border-color: #0F172A;
-  outline: none;
-  box-shadow: 0 0 0 3px #0F172A20;
-}
-```
-
-### Modals
-
-```css
-.modal-overlay {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
-
-.modal {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: var(--shadow-xl);
-  max-width: 500px;
-  width: 90%;
+.card-compliance:hover {
+  box-shadow: 0 4px 12px rgba(18, 63, 53, 0.08);
 }
 ```
 
 ---
 
-## Style Guidelines
+## 5. Diretrizes para Recursos de IA
 
-**Style:** Trust and Authority
-
-**Keywords:** Certificates/badges displayed, expert credentials, case studies with metrics, before/after comparisons, industry recognition, security badges
-
-**Best For:** Healthcare/medical landing pages, financial services, enterprise software, premium/luxury products, legal services
-
-**Key Effects:** Badge hover effects, metric pulse animations, certificate carousel, smooth stat reveal
-
-### Page Pattern
-
-**Pattern Name:** Enterprise Gateway
-
-- **Conversion Strategy:**  logo carousel,  tab switching for industries, Path selection (I am a...). Mega menu navigation. Trust signals prominent.
-- **CTA Placement:** Contact Sales (Primary) + Login (Secondary)
-- **Section Order:** 1. Hero (Video/Mission), 2. Solutions by Industry, 3. Solutions by Role, 4. Client Logos, 5. Contact Sales
+- O selo ou badge de IA usa Verde digital (`#65D6AD`) com fundo `#EDFAF5` e texto `#123F35`.
+- Distincao clara entre sugestoes de IA e dados confirmados por revisao humana (conceito quatro-olhos).
+- Sem efeitos neon ou estetica de ficcao cientifica exagerada.
 
 ---
 
-## Anti-Patterns (Do NOT Use)
+## 6. Checklist de Acessibilidade (WCAG 2.2 AA)
 
-- ❌ Playful design
-- ❌ Hidden credentials
-- ❌ AI purple/pink gradients
-
-### Additional Forbidden Patterns
-
-- ❌ **Emojis as icons**: Use SVG icons (Heroicons, Lucide, Simple Icons)
-- ❌ **Missing cursor:pointer**: All clickable elements must have cursor:pointer
-- ❌ **Layout-shifting hovers**: Avoid scale transforms that shift layout
-- ❌ **Low contrast text**: Maintain 4.5:1 minimum contrast ratio
-- ❌ **Instant state changes**: Always use transitions (150-300ms)
-- ❌ **Invisible focus states**: Focus states must be visible for a11y
-
----
-
-## Pre-Delivery Checklist
-
-Before delivering any UI code, verify:
-
-- [ ] No emojis used as icons (use SVG instead)
-- [ ] All icons from consistent icon set (Heroicons/Lucide)
-- [ ] `cursor-pointer` on all clickable elements
-- [ ] Hover states with smooth transitions (150-300ms)
-- [ ] Light mode: text contrast 4.5:1 minimum
-- [ ] Focus states visible for keyboard navigation
-- [ ] `prefers-reduced-motion` respected
-- [ ] Responsive: 375px, 768px, 1024px, 1440px
-- [ ] No content hidden behind fixed navbars
-- [ ] No horizontal scroll on mobile
+- [x] Contraste minimo de 4.5:1 para texto normal e 3:1 para texto grande.
+- [x] Foco visivel em navegacao por teclado.
+- [x] Cores semanticas associadas a icones ou textos explicativos.
+- [x] Zero emojis como icones permanentes: uso exclusivo de SVG.
+- [x] Responsividade fluida para mobile, tablet e desktop.
