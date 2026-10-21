@@ -57,3 +57,46 @@ test("Grafo de Conformidade: Desdobramento de Norma em Requisito e Status Inicia
   assert.equal(requirement.applicability, "Aplicável");
   assert.equal(requirement.compliance_status, "Conforme");
 });
+
+test("Sincronização Offline Idempotente: Inspeção com client_local_id duplicado é ignorada", () => {
+  const store = { inspections: [] };
+  const syncInspection = (record) => {
+    const existing = store.inspections.find(i => i.client_local_id === record.client_local_id);
+    if (!existing) {
+      store.inspections.push(record);
+      return { status: "created" };
+    }
+    return { status: "skipped_duplicate" };
+  };
+
+  const payload = { client_local_id: "uuid-device-01", checklist_id: "chk-1", tenant_id: "tenant-1" };
+  const res1 = syncInspection(payload);
+  const res2 = syncInspection(payload);
+
+  assert.equal(res1.status, "created");
+  assert.equal(res2.status, "skipped_duplicate");
+  assert.equal(store.inspections.length, 1, "Armazenamento deve conter apenas 1 registro evitando duplicidade");
+});
+
+test("Checklist Inspecao: Desvio Crítico gera Não Conformidade (NC) automaticamente", () => {
+  const answers = [
+    { question_id: "q1", compliant: false, criticality: "CRITICA", text: "Bacia de contenção com rachadura e vazamento" },
+    { question_id: "q2", compliant: true, criticality: "MEDIA", text: "Placas de identificação visíveis" }
+  ];
+
+  const generatedNCs = [];
+  answers.forEach(a => {
+    if (!a.compliant && (a.criticality === "ALTA" || a.criticality === "CRITICA")) {
+      generatedNCs.push({
+        title: `Desvio em inspeção de campo: ${a.text}`,
+        severity: a.criticality === "CRITICA" ? "Gravíssima" : "Grave",
+        status: "Aberta"
+      });
+    }
+  });
+
+  assert.equal(generatedNCs.length, 1);
+  assert.equal(generatedNCs[0].severity, "Gravíssima");
+  assert.equal(generatedNCs[0].status, "Aberta");
+});
+

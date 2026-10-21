@@ -249,6 +249,28 @@ export interface NonConformityRecord {
   created_at: string;
 }
 
+export interface ChecklistQuestionRecord {
+  id: string;
+  checklist_id: string;
+  question_order: number;
+  prompt: string;
+  response_type: "BOOLEAN" | "TEXT" | "NUMBER" | "SELECT" | "PHOTO" | "GPS";
+  options?: string[];
+  requires_photo_on_failure: boolean;
+  criticality: "BAIXA" | "MEDIA" | "ALTA" | "CRITICA";
+}
+
+export interface ChecklistRecord {
+  id: string;
+  organization_id: string;
+  title: string;
+  category: string;
+  version: number;
+  is_active: boolean;
+  questions: ChecklistQuestionRecord[];
+  created_at: string;
+}
+
 export interface LiraDatabaseSchema {
   organizations: OrganizationRecord[];
   units: UnitRecord[];
@@ -265,6 +287,7 @@ export interface LiraDatabaseSchema {
   legal_requirements: LegalRequirementRecord[];
   risks: RiskRecord[];
   nonconformities: NonConformityRecord[];
+  checklists: ChecklistRecord[];
   audit_logs: AuditLogRecord[];
 }
 
@@ -741,6 +764,93 @@ function getInitialDatabase(): LiraDatabaseSchema {
         created_at: new Date().toISOString()
       }
     ],
+    checklists: [
+      {
+        id: "chk-1",
+        organization_id: defaultOrgId,
+        title: "Inspeção Semanal de Bacias de Contenção e Tancagem de Químicos",
+        category: "Bacias de Contenção e Efluentes",
+        version: 1,
+        is_active: true,
+        questions: [
+          {
+            id: "q-1",
+            checklist_id: "chk-1",
+            question_order: 1,
+            prompt: "As bacias de contenção estão limpas, sem acúmulo de efluente, óleo ou água pluvial?",
+            response_type: "BOOLEAN",
+            requires_photo_on_failure: true,
+            criticality: "ALTA"
+          },
+          {
+            id: "q-2",
+            checklist_id: "chk-1",
+            question_order: 2,
+            prompt: "As válvulas de dreno das bacias estão operando normalmente e mantidas fechadas com trava de segurança?",
+            response_type: "BOOLEAN",
+            requires_photo_on_failure: true,
+            criticality: "CRITICA"
+          },
+          {
+            id: "q-3",
+            checklist_id: "chk-1",
+            question_order: 3,
+            prompt: "O indicador visual de nível dos tanques de solvente está legível e calibrado?",
+            response_type: "BOOLEAN",
+            requires_photo_on_failure: false,
+            criticality: "MEDIA"
+          },
+          {
+            id: "q-4",
+            checklist_id: "chk-1",
+            question_order: 4,
+            prompt: "Registro de coordenadas GPS e condição geral do dique de proteção",
+            response_type: "GPS",
+            requires_photo_on_failure: false,
+            criticality: "BAIXA"
+          }
+        ],
+        created_at: new Date().toISOString()
+      },
+      {
+        id: "chk-2",
+        organization_id: defaultOrgId,
+        title: "Checklist de Expedição e Controle de Resíduos Perigosos (Classe I)",
+        category: "Armazenamento de Resíduos",
+        version: 1,
+        is_active: true,
+        questions: [
+          {
+            id: "q-201",
+            checklist_id: "chk-2",
+            question_order: 1,
+            prompt: "Os tambores e bombonas estão rotulados com identificação ABNT e símbolo de risco?",
+            response_type: "BOOLEAN",
+            requires_photo_on_failure: true,
+            criticality: "ALTA"
+          },
+          {
+            id: "q-202",
+            checklist_id: "chk-2",
+            question_order: 2,
+            prompt: "O transportador apresentou cópia válida da Licença Ambiental do IBAMA / Estadual?",
+            response_type: "BOOLEAN",
+            requires_photo_on_failure: true,
+            criticality: "CRITICA"
+          },
+          {
+            id: "q-203",
+            checklist_id: "chk-2",
+            question_order: 3,
+            prompt: "O MTR eletrônico foi gerado e conferido com os dados do manifesto físico?",
+            response_type: "BOOLEAN",
+            requires_photo_on_failure: false,
+            criticality: "ALTA"
+          }
+        ],
+        created_at: new Date().toISOString()
+      }
+    ],
     audit_logs: [
       {
         id: "log-1",
@@ -779,6 +889,9 @@ export function readDatabase(): LiraDatabaseSchema {
     }
     if (!parsed.nonconformities || parsed.nonconformities.length === 0) {
       parsed.nonconformities = initial.nonconformities;
+    }
+    if (!parsed.checklists || parsed.checklists.length === 0) {
+      parsed.checklists = initial.checklists;
     }
 
     return parsed;
@@ -1014,4 +1127,121 @@ export function createNonConformity(data: Omit<NonConformityRecord, "id" | "crea
   );
 
   return newNc;
+}
+
+export function createChecklist(data: Omit<ChecklistRecord, "id" | "created_at">, userName: string): ChecklistRecord {
+  const db = readDatabase();
+  const newChk: ChecklistRecord = {
+    ...data,
+    id: `chk-${Date.now()}`,
+    created_at: new Date().toISOString()
+  };
+  db.checklists.unshift(newChk);
+  writeDatabase(db);
+  recordAuditLog(
+    data.organization_id,
+    userName,
+    "CREATE_CHECKLIST",
+    "CHECKLIST",
+    newChk.id,
+    `Checklist "${newChk.title}" criado com ${newChk.questions.length} perguntas.`
+  );
+  return newChk;
+}
+
+export function syncInspectionBatch(
+  inspectionsBatch: Array<{
+    client_local_id: string;
+    organization_id: string;
+    unit_id: string;
+    checklist_id: string;
+    title: string;
+    answers: Array<{
+      question_id: string;
+      prompt: string;
+      is_conforming: boolean;
+      value: any;
+      criticality: "BAIXA" | "MEDIA" | "ALTA" | "CRITICA";
+      notes?: string;
+    }>;
+    started_at: string;
+    completed_at: string;
+    latitude?: number;
+    longitude?: number;
+  }>,
+  userName: string
+): { syncedCount: number; createdNCsCount: number } {
+  const db = readDatabase();
+  let syncedCount = 0;
+  let createdNCsCount = 0;
+
+  for (const item of inspectionsBatch) {
+    // Idempotência baseada no client_local_id (ON CONFLICT DO NOTHING)
+    const existingIndex = db.inspections.findIndex(
+      (i: any) => i.id === item.client_local_id || (i as any).client_local_id === item.client_local_id
+    );
+    if (existingIndex !== -1) {
+      continue;
+    }
+
+    const totalQuestions = item.answers.length;
+    const conformitiesCount = item.answers.filter((a) => a.is_conforming).length;
+    const deviationsCount = totalQuestions - conformitiesCount;
+    const score = totalQuestions > 0 ? Math.round((conformitiesCount / totalQuestions) * 100) : 100;
+
+    const newInsp: InspectionRecord = {
+      id: item.client_local_id,
+      organization_id: item.organization_id,
+      unit_id: item.unit_id,
+      title: item.title,
+      inspector_name: userName,
+      inspection_date: item.completed_at ? item.completed_at.split("T")[0] : new Date().toISOString().split("T")[0],
+      score_percentage: score,
+      total_items: totalQuestions,
+      conformities_count: conformitiesCount,
+      deviations_count: deviationsCount,
+      status: "Concluída",
+      observations: `Sincronizado via fila offline mobile. Score de conformidade: ${score}%.`,
+      created_at: new Date().toISOString()
+    };
+
+    (newInsp as any).client_local_id = item.client_local_id;
+    db.inspections.unshift(newInsp);
+    syncedCount++;
+
+    // Desvios críticos geram Não Conformidade automaticamente (Grafo de Conformidade)
+    for (const deviation of item.answers.filter((a) => !a.is_conforming)) {
+      if (deviation.criticality === "ALTA" || deviation.criticality === "CRITICA") {
+        const newNC: NonConformityRecord = {
+          id: `nc-sync-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+          organization_id: item.organization_id,
+          unit_id: item.unit_id,
+          code: `NC-CAMPO-${Date.now().toString().slice(-4)}`,
+          origin: "Inspeção",
+          origin_id: newInsp.id,
+          description: `Desvio identificado em campo: ${deviation.prompt}. ${deviation.notes || ""}`,
+          root_cause: "Constatado em inspeção de campo offline.",
+          criticality: deviation.criticality === "CRITICA" ? "Crítica" : "Alta",
+          responsible_name: userName,
+          deadline: new Date(Date.now() + 7 * 86400000).toISOString().split("T")[0],
+          status: "Aberta",
+          created_at: new Date().toISOString()
+        };
+        db.nonconformities.unshift(newNC);
+        createdNCsCount++;
+      }
+    }
+  }
+
+  writeDatabase(db);
+  recordAuditLog(
+    inspectionsBatch[0]?.organization_id || "org-1",
+    userName,
+    "SYNC_INSPECTIONS",
+    "INSPECTION_SYNC",
+    `batch-${Date.now()}`,
+    `Lote de inspeções sincronizado: ${syncedCount} inspeções processadas com ${createdNCsCount} NCs geradas automaticamente.`
+  );
+
+  return { syncedCount, createdNCsCount };
 }

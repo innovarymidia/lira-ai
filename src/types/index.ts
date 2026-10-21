@@ -229,3 +229,28 @@ export interface NonConformity {
   action_plan_id?: string;
   created_at: string;
 }
+
+export type ChecklistQuestionType = "BOOLEAN" | "TEXT" | "NUMBER" | "SELECT" | "PHOTO" | "GPS";
+export type ChecklistCriticality = "BAIXA" | "MEDIA" | "ALTA" | "CRITICA";
+
+export interface ChecklistQuestion {
+  id: string;
+  checklist_id: string;
+  question_order: number;
+  prompt: string;
+  response_type: ChecklistQuestionType;
+  options?: string[];
+  requires_photo_on_failure: boolean;
+  criticality: ChecklistCriticality;
+}
+
+export interface Checklist {
+  id: string;
+  organization_id: string;
+  title: string;
+  category: string;
+  version: number;
+  is_active: boolean;
+  questions: ChecklistQuestion[];
+  created_at: string;
+}

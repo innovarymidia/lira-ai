@@ -10,7 +10,9 @@ import {
   createLegalRequirement,
   evaluateRequirement,
   createRisk,
-  createNonConformity
+  createNonConformity,
+  createChecklist,
+  syncInspectionBatch
 } from "@/lib/db/store";
 
 export async function GET(request: NextRequest) {
@@ -33,6 +35,7 @@ export async function GET(request: NextRequest) {
   const legalRequirements = (db.legal_requirements || []).filter((r) => r.organization_id === tenantId);
   const risks = (db.risks || []).filter((rk) => rk.organization_id === tenantId);
   const nonconformities = (db.nonconformities || []).filter((nc) => nc.organization_id === tenantId);
+  const checklists = db.checklists || [];
   const auditLogs = db.audit_logs.filter((l) => l.organization_id === tenantId);
 
   return NextResponse.json({
@@ -51,6 +54,7 @@ export async function GET(request: NextRequest) {
     legalRequirements,
     risks,
     nonconformities,
+    checklists,
     auditLogs
   });
 }
@@ -372,6 +376,23 @@ export async function POST(request: NextRequest) {
         action_plan_id: payload.action_plan_id
       }, currentUserName);
       return NextResponse.json({ success: true, nonconformity: newNc });
+    }
+
+    if (action === "CREATE_CHECKLIST") {
+      const newChk = createChecklist({
+        organization_id: currentTenantId,
+        title: payload.title,
+        category: payload.category || "Operações Gerais",
+        version: 1,
+        is_active: true,
+        questions: payload.questions || []
+      }, currentUserName);
+      return NextResponse.json({ success: true, checklist: newChk });
+    }
+
+    if (action === "SYNC_INSPECTIONS") {
+      const result = syncInspectionBatch(payload.batch || [], currentUserName);
+      return NextResponse.json({ success: true, ...result });
     }
 
     return NextResponse.json({ error: "Ação não reconhecida" }, { status: 400 });

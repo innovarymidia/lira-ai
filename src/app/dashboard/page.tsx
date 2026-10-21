@@ -37,6 +37,7 @@ import { LegislationTab } from "@/components/modules/LegislationTab";
 import { RiskMatrixTab } from "@/components/modules/RiskMatrixTab";
 import { NonConformitiesTab } from "@/components/modules/NonConformitiesTab";
 import { CalendarTab } from "@/components/modules/CalendarTab";
+import { ChecklistsTab } from "@/components/modules/ChecklistsTab";
 import { GlobalSearchModal } from "@/components/modules/GlobalSearchModal";
 
 export default function DashboardPage() {
@@ -384,6 +385,38 @@ export default function DashboardPage() {
     }
   };
 
+  const handleCreateChecklist = async (data: any) => {
+    const ok = await sendAction("CREATE_CHECKLIST", data);
+    if (ok) {
+      showToast(`Checklist "${data.title}" cadastrado com sucesso.`);
+    }
+  };
+
+  const handleSyncInspections = async (batch: any[]) => {
+    try {
+      const res = await fetch("/api/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "SYNC_INSPECTIONS",
+          tenant_id: activeTenant,
+          user_name: userName,
+          payload: { batch }
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Sincronização concluída: ${data.syncedCount} inspeções processadas.`);
+        await loadData();
+        return { syncedCount: data.syncedCount, createdNCsCount: data.createdNCsCount };
+      }
+      return { syncedCount: 0, createdNCsCount: 0 };
+    } catch {
+      showToast("Erro ao sincronizar inspeções.");
+      return { syncedCount: 0, createdNCsCount: 0 };
+    }
+  };
+
   // Se os dados estao carregando
   if (isLoading || !systemData) {
     return (
@@ -412,6 +445,7 @@ export default function DashboardPage() {
     legalRequirements = [],
     risks = [],
     nonconformities = [],
+    checklists = [],
     auditLogs = []
   } = systemData;
 
@@ -1130,40 +1164,16 @@ export default function DashboardPage() {
           </div>
         ) : null}
 
-        {/* ABA INSPECOES (INS) */}
+        {/* ABA INSPECOES E CHECKLISTS MOBILE-READY (INS) */}
         {activeTab === "inspections" ? (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold text-primary">Inspeções de Campo e Checklists Ambientais</h2>
-                <p className="text-xs text-slate-500">Execução de auditorias de rotina, verificação de desvios e evidências fotográficas.</p>
-              </div>
-              <button onClick={() => setIsNewInspectionModalOpen(true)} className="btn-primary text-xs">
-                <Plus className="h-3.5 w-3.5" />
-                <span>Registrar Inspeção de Campo</span>
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              {inspections.map((insp: any) => (
-                <div key={insp.id} className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-primary text-sm">{insp.title}</span>
-                      <span className="rounded bg-emerald-100 text-emerald-800 px-2 py-0.5 text-[10px] font-bold">Nota: {insp.score_percentage}%</span>
-                      <span className="rounded bg-slate-100 text-slate-700 px-2 py-0.5 text-[10px] font-semibold">{insp.status}</span>
-                    </div>
-                    <p className="text-xs text-slate-600">
-                      Inspetor: {insp.inspector_name} | Data: {insp.inspection_date} | {insp.conformities_count} conformes e {insp.deviations_count} desvios.
-                    </p>
-                    {insp.observations ? (
-                      <p className="text-[11px] text-slate-500 italic mt-1">Obs: {insp.observations}</p>
-                    ) : null}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ChecklistsTab
+            checklists={checklists}
+            inspections={inspections}
+            units={units}
+            userName={userName}
+            onCreateChecklist={handleCreateChecklist}
+            onSyncInspections={handleSyncInspections}
+          />
         ) : null}
 
         {/* ABA AUDITORIAS E PLANOS DE ACAO (AUD e ACA) */}
