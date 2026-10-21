@@ -150,3 +150,82 @@ export interface Document {
   created_by: string;
   created_at: string;
 }
+
+export type LegislationSphere = "FEDERAL" | "ESTADUAL" | "MUNICIPAL";
+export type LegislationType = "LEI" | "DECRETO" | "RESOLUCAO" | "PORTARIA" | "INSTRUCAO_NORMATIVA" | "OUTROS";
+export type LegislationStatus = "Vigente" | "Revogada" | "Alterada";
+
+export interface Legislation {
+  id: string;
+  legislation_type: LegislationType;
+  number: string;
+  year: number;
+  issuing_body: string;
+  sphere: LegislationSphere;
+  state?: string;
+  city?: string;
+  publication_date: string;
+  status: LegislationStatus;
+  theme: string;
+  summary: string;
+  official_url?: string;
+  created_at: string;
+}
+
+export type RequirementApplicability = "Aplicável" | "Não Aplicável" | "Em Análise" | "Parcialmente Aplicável";
+export type RequirementComplianceStatus = "Conforme" | "Pendente" | "Não Conforme";
+export type RequirementCriticality = "BAIXA" | "MEDIA" | "ALTA" | "CRITICA";
+
+export interface LegalRequirement {
+  id: string;
+  legislation_id: string;
+  organization_id: string;
+  unit_id: string;
+  code: string;
+  article_reference: string;
+  title: string;
+  obligation_text: string;
+  evidence_required_description: string;
+  criticality: RequirementCriticality;
+  applicability: RequirementApplicability;
+  compliance_status: RequirementComplianceStatus;
+  justification: string;
+  responsible_name: string;
+  created_at: string;
+}
+
+export interface Risk {
+  id: string;
+  organization_id: string;
+  unit_id: string;
+  category: string;
+  process_description: string;
+  probability: number;
+  impact: number;
+  risk_score: number;
+  criticality: "Baixo" | "Médio" | "Crítico";
+  existing_controls: string;
+  associated_requirement_id?: string;
+  status: "Monitorado" | "Em Mitigação" | "Crítico";
+  created_at: string;
+}
+
+export type NonConformityOrigin = "Auditoria" | "Inspeção" | "Requisito Legal" | "Condicionante" | "Acidente" | "Análise Interna";
+export type NonConformityStatus = "Aberta" | "Em Tratamento" | "Aguardando Eficácia" | "Concluída Eficaz" | "Cancelada";
+
+export interface NonConformity {
+  id: string;
+  organization_id: string;
+  unit_id: string;
+  code: string;
+  origin: NonConformityOrigin;
+  origin_id?: string;
+  description: string;
+  root_cause: string;
+  criticality: "Baixa" | "Média" | "Alta" | "Crítica";
+  responsible_name: string;
+  deadline: string;
+  status: NonConformityStatus;
+  action_plan_id?: string;
+  created_at: string;
+}

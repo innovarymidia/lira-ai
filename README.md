@@ -9,6 +9,13 @@
 
 Toda a fundamentação técnica e regras de negócio estão estruturadas e documentadas antes do início da programação:
 
+0. **[Especificação Técnica de Desenvolvimento Completa v1.0 (Master)](file:///c:/Users/04680566108/Documents/lira-ai/docs/especificacao-tecnica-desenvolvimento-v1.0.md)**:
+   - **Grafo de Governança Ambiental**: Arquitetura monólito modular interconectada de ponta a ponta.
+   - **Schema PostgreSQL DDL Completo**: 40+ tabelas com Row-Level Security (RLS), índices e constraints.
+   - **Contratos de API REST**: Endpoints unificados, payloads Zod e padrões de erro.
+   - **Invariantes e Regras de Negócio**: Motor de prazos (120 dias LC 140/2011), regra de quatro olhos, versionamento imutável e sincronização offline com idempotência.
+   - **Backlog Executável (Epics 01 a 27)**: Fatiamento em tarefas atômicas com critérios de aceite prontos para programação.
+
 1. **[Especificação Funcional Baseline v0.1](file:///c:/Users/04680566108/Documents/lira-ai/docs/especificacao-funcional-v0.1.md)**:
    - Definição dos 8 perfis funcionais.
    - Catalogação dos 14 módulos (140 requisitos com identificadores únicos rastreáveis: ORG, LEG, LIC, CON, TAR, DOC, RES, INS, AUD, ACA, IND, IAI, SaaS, AUT).

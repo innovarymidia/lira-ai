@@ -181,6 +181,74 @@ export interface AuditLogRecord {
   timestamp: string;
 }
 
+export interface LegislationRecord {
+  id: string;
+  legislation_type: "LEI" | "DECRETO" | "RESOLUCAO" | "PORTARIA" | "INSTRUCAO_NORMATIVA" | "OUTROS";
+  number: string;
+  year: number;
+  issuing_body: string;
+  sphere: "FEDERAL" | "ESTADUAL" | "MUNICIPAL";
+  state?: string;
+  city?: string;
+  publication_date: string;
+  status: "Vigente" | "Revogada" | "Alterada";
+  theme: string;
+  summary: string;
+  official_url?: string;
+  created_at: string;
+}
+
+export interface LegalRequirementRecord {
+  id: string;
+  legislation_id: string;
+  organization_id: string;
+  unit_id: string;
+  code: string;
+  article_reference: string;
+  title: string;
+  obligation_text: string;
+  evidence_required_description: string;
+  criticality: "BAIXA" | "MEDIA" | "ALTA" | "CRITICA";
+  applicability: "Aplicável" | "Não Aplicável" | "Em Análise" | "Parcialmente Aplicável";
+  compliance_status: "Conforme" | "Pendente" | "Não Conforme";
+  justification: string;
+  responsible_name: string;
+  created_at: string;
+}
+
+export interface RiskRecord {
+  id: string;
+  organization_id: string;
+  unit_id: string;
+  category: string;
+  process_description: string;
+  probability: number;
+  impact: number;
+  risk_score: number;
+  criticality: "Baixo" | "Médio" | "Crítico";
+  existing_controls: string;
+  associated_requirement_id?: string;
+  status: "Monitorado" | "Em Mitigação" | "Crítico";
+  created_at: string;
+}
+
+export interface NonConformityRecord {
+  id: string;
+  organization_id: string;
+  unit_id: string;
+  code: string;
+  origin: "Auditoria" | "Inspeção" | "Requisito Legal" | "Condicionante" | "Acidente" | "Análise Interna";
+  origin_id?: string;
+  description: string;
+  root_cause: string;
+  criticality: "Baixa" | "Média" | "Alta" | "Crítica";
+  responsible_name: string;
+  deadline: string;
+  status: "Aberta" | "Em Tratamento" | "Aguardando Eficácia" | "Concluída Eficaz" | "Cancelada";
+  action_plan_id?: string;
+  created_at: string;
+}
+
 export interface LiraDatabaseSchema {
   organizations: OrganizationRecord[];
   units: UnitRecord[];
@@ -193,6 +261,10 @@ export interface LiraDatabaseSchema {
   inspections: InspectionRecord[];
   audits: AuditRecord[];
   action_plans: ActionPlanRecord[];
+  legislations: LegislationRecord[];
+  legal_requirements: LegalRequirementRecord[];
+  risks: RiskRecord[];
+  nonconformities: NonConformityRecord[];
   audit_logs: AuditLogRecord[];
 }
 
@@ -493,6 +565,182 @@ function getInitialDatabase(): LiraDatabaseSchema {
         created_at: new Date().toISOString()
       }
     ],
+    legislations: [
+      {
+        id: "leg-1",
+        legislation_type: "RESOLUCAO",
+        number: "Resolução CONAMA nº 430/2011",
+        year: 2011,
+        issuing_body: "CONAMA / MMA",
+        sphere: "FEDERAL",
+        publication_date: "2011-05-16",
+        status: "Vigente",
+        theme: "Efluentes e Recursos Hídricos",
+        summary: "Dispõe sobre as condições e padrões de lançamento de efluentes, complementa e altera a Resolução nº 357/2005.",
+        official_url: "https://conama.mma.gov.br",
+        created_at: new Date().toISOString()
+      },
+      {
+        id: "leg-2",
+        legislation_type: "LEI",
+        number: "Lei Federal nº 12.305/2010 (PNRS)",
+        year: 2010,
+        issuing_body: "Congresso Nacional",
+        sphere: "FEDERAL",
+        publication_date: "2010-08-02",
+        status: "Vigente",
+        theme: "Resíduos Sólidos",
+        summary: "Institui a Política Nacional de Resíduos Sólidos (PNRS) e estabelece diretrizes relativas à gestão integrada e gerenciamento de resíduos.",
+        official_url: "https://www.planalto.gov.br",
+        created_at: new Date().toISOString()
+      },
+      {
+        id: "leg-3",
+        legislation_type: "DECRETO",
+        number: "Decreto Estadual SP nº 8.468/1976",
+        year: 1976,
+        issuing_body: "Governo do Estado de São Paulo / CETESB",
+        sphere: "ESTADUAL",
+        state: "SP",
+        publication_date: "1976-09-08",
+        status: "Vigente",
+        theme: "Controle da Poluição Ambiental",
+        summary: "Aprova o Regulamento da Lei nº 997, de 31 de maio de 1976, sobre a Prevenção e o Controle da Poluição do Meio Ambiente em SP.",
+        official_url: "https://cetesb.sp.gov.br",
+        created_at: new Date().toISOString()
+      }
+    ],
+    legal_requirements: [
+      {
+        id: "req-1",
+        legislation_id: "leg-1",
+        organization_id: defaultOrgId,
+        unit_id: defaultUnitId,
+        code: "REQ-CONAMA-430-ART-16",
+        article_reference: "Art. 16, Tabela I",
+        title: "Padrões de Lançamento de Efluentes Industriais Líquidos",
+        obligation_text: "Os efluentes de qualquer fonte poluidora somente poderão ser lançados após tratamento, não podendo exceder pH 5 a 9, temperatura inferior a 40ºC e DBO5 máxima de 120 mg/L.",
+        evidence_required_description: "Laudo analítico semestral de laboratório acreditado pelo Inmetro com cadeia de custódia.",
+        criticality: "CRITICA",
+        applicability: "Aplicável",
+        compliance_status: "Conforme",
+        justification: "A Planta Paulínia possui lançamento de efluente tratado na bacia PCJ após tratamento biológico na ETE interna.",
+        responsible_name: "Carlos Ferreira (Analista)",
+        created_at: new Date().toISOString()
+      },
+      {
+        id: "req-2",
+        legislation_id: "leg-2",
+        organization_id: defaultOrgId,
+        unit_id: defaultUnitId,
+        code: "REQ-PNRS-12305-ART-20",
+        article_reference: "Art. 20, Inciso I",
+        title: "Elaboração e Atualização Anual do Plano de Gerenciamento de Resíduos Sólidos (PGRS)",
+        obligation_text: "Geradores de resíduos industriais perigosos devem elaborar e manter atualizado anualmente o PGRS com ART de responsável técnico habilitado.",
+        evidence_required_description: "Documento PGRS 2026 assinado com Anotação de Responsabilidade Técnica (ART) do CRQ/CREA.",
+        criticality: "ALTA",
+        applicability: "Aplicável",
+        compliance_status: "Conforme",
+        justification: "Enquadramento como grande gerador de resíduos perigosos da classe química.",
+        responsible_name: "Mariana Costa (Gestora)",
+        created_at: new Date().toISOString()
+      },
+      {
+        id: "req-3",
+        legislation_id: "leg-3",
+        organization_id: defaultOrgId,
+        unit_id: defaultUnitId,
+        code: "REQ-DEC-8468-ART-18",
+        article_reference: "Art. 18, Item B",
+        title: "Comprovação de Operação Contínua da Estação de Tratamento de Efluentes",
+        obligation_text: "Manter registros diários de vazão e operação dos sistemas de controle ambiental disponíveis para fiscalização imediata da CETESB.",
+        evidence_required_description: "Planilhas de controle operacional e laudos trimestrais de eficiência da ETE.",
+        criticality: "MEDIA",
+        applicability: "Aplicável",
+        compliance_status: "Pendente",
+        justification: "Operação industrial sujeita à fiscalização periódica da agência ambiental CETESB Paulínia.",
+        responsible_name: "Equipe de Operações ETE",
+        created_at: new Date().toISOString()
+      }
+    ],
+    risks: [
+      {
+        id: "risk-1",
+        organization_id: defaultOrgId,
+        unit_id: defaultUnitId,
+        category: "Contaminação de Recursos Hídricos",
+        process_description: "Vazamento acidental de solventes na tubulação subterrânea de transferência para a ETE",
+        probability: 2,
+        impact: 4,
+        risk_score: 8,
+        criticality: "Médio",
+        existing_controls: "Válvulas de alívio automatizadas, canaletas cegas de contenção e teste hidrostático anual.",
+        associated_requirement_id: "req-1",
+        status: "Monitorado",
+        created_at: new Date().toISOString()
+      },
+      {
+        id: "risk-2",
+        organization_id: defaultOrgId,
+        unit_id: defaultUnitId,
+        category: "Emissão Atmosférica Fugitiva",
+        process_description: "Falha no sistema de lavagem de gases da chaminé CH-01 durante pico térmico",
+        probability: 3,
+        impact: 4,
+        risk_score: 12,
+        criticality: "Médio",
+        existing_controls: "Analisadores contínuos de opacidade e sistema redundante de sopradores.",
+        status: "Em Mitigação",
+        created_at: new Date().toISOString()
+      },
+      {
+        id: "risk-3",
+        organization_id: defaultOrgId,
+        unit_id: defaultUnitId,
+        category: "Multa e Interdição Legal",
+        process_description: "Atraso no protocolo de renovação tempestiva da Licença de Operação (120 dias LC 140/2011)",
+        probability: 1,
+        impact: 5,
+        risk_score: 5,
+        criticality: "Baixo",
+        existing_controls: "Alerta automático do LIRA AI aos 120 dias e governança preventiva integrada.",
+        status: "Monitorado",
+        created_at: new Date().toISOString()
+      }
+    ],
+    nonconformities: [
+      {
+        id: "nc-1",
+        organization_id: defaultOrgId,
+        unit_id: defaultUnitId,
+        code: "NC-2026-001",
+        origin: "Inspeção",
+        origin_id: "insp-1",
+        description: "Identificado gotejamento na válvula de dreno V-04 da bacia de contenção B-02 com acúmulo de líquido oleoso.",
+        root_cause: "Desgaste da junta de vedação devido à fadiga térmica e vibração da bomba P-02.",
+        criticality: "Média",
+        responsible_name: "Carlos Ferreira",
+        deadline: "2026-10-25",
+        status: "Em Tratamento",
+        action_plan_id: "ap-1",
+        created_at: new Date().toISOString()
+      },
+      {
+        id: "nc-2",
+        organization_id: defaultOrgId,
+        unit_id: defaultUnitId,
+        code: "NC-2026-002",
+        origin: "Auditoria",
+        origin_id: "aud-1",
+        description: "Falta de comprovação de calibração metrológica do manômetro M-12 do lavador de gases.",
+        root_cause: "Manômetro substituído em parada emergencial sem envio imediato para calibração com padrão RBC.",
+        criticality: "Baixa",
+        responsible_name: "Equipe de Manutenção",
+        deadline: "2026-11-15",
+        status: "Aberta",
+        created_at: new Date().toISOString()
+      }
+    ],
     audit_logs: [
       {
         id: "log-1",
@@ -516,7 +764,24 @@ export function readDatabase(): LiraDatabaseSchema {
       return initial;
     }
     const raw = fs.readFileSync(DB_FILE_PATH, "utf-8");
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    const initial = getInitialDatabase();
+
+    // Auto-migracao e enriquecimento de colecoes
+    if (!parsed.legislations || parsed.legislations.length === 0) {
+      parsed.legislations = initial.legislations;
+    }
+    if (!parsed.legal_requirements || parsed.legal_requirements.length === 0) {
+      parsed.legal_requirements = initial.legal_requirements;
+    }
+    if (!parsed.risks || parsed.risks.length === 0) {
+      parsed.risks = initial.risks;
+    }
+    if (!parsed.nonconformities || parsed.nonconformities.length === 0) {
+      parsed.nonconformities = initial.nonconformities;
+    }
+
+    return parsed;
   } catch (error) {
     console.error("Erro ao ler banco de dados LIRA:", error);
     return getInitialDatabase();
@@ -639,4 +904,114 @@ export function approveCondition(conditionId: string, userName: string, notes: s
   );
 
   return cond;
+}
+
+// Helpers para Legislação e Grafo de Conformidade
+export function createLegislation(data: Omit<LegislationRecord, "id" | "created_at">, userName: string): LegislationRecord {
+  const db = readDatabase();
+  const newLeg: LegislationRecord = {
+    ...data,
+    id: `leg-${Date.now()}`,
+    created_at: new Date().toISOString()
+  };
+  db.legislations.unshift(newLeg);
+  writeDatabase(db);
+  recordAuditLog("org-1", userName, "CREATE_LEGISLATION", "LEGISLATION", newLeg.id, `Norma ${newLeg.number} cadastrada no acervo.`);
+  return newLeg;
+}
+
+export function createLegalRequirement(data: Omit<LegalRequirementRecord, "id" | "created_at">, userName: string): LegalRequirementRecord {
+  const db = readDatabase();
+  const newReq: LegalRequirementRecord = {
+    ...data,
+    id: `req-${Date.now()}`,
+    created_at: new Date().toISOString()
+  };
+  db.legal_requirements.unshift(newReq);
+  writeDatabase(db);
+  recordAuditLog(data.organization_id, userName, "CREATE_LEGAL_REQUIREMENT", "LEGAL_REQUIREMENT", newReq.id, `Requisito ${newReq.code} vinculado à unidade.`);
+  return newReq;
+}
+
+export function evaluateRequirement(
+  requirementId: string,
+  applicability: LegalRequirementRecord["applicability"],
+  complianceStatus: LegalRequirementRecord["compliance_status"],
+  justification: string,
+  userName: string
+): LegalRequirementRecord | null {
+  const db = readDatabase();
+  const index = db.legal_requirements.findIndex((r) => r.id === requirementId);
+  if (index === -1) return null;
+
+  const req = db.legal_requirements[index];
+  req.applicability = applicability;
+  req.compliance_status = complianceStatus;
+  req.justification = justification;
+  req.responsible_name = userName;
+
+  db.legal_requirements[index] = req;
+  writeDatabase(db);
+
+  recordAuditLog(
+    req.organization_id,
+    userName,
+    "EVALUATE_REQUIREMENT",
+    "LEGAL_REQUIREMENT",
+    req.id,
+    `Avaliação de conformidade do requisito ${req.code}: ${applicability} / ${complianceStatus}. Justificativa: ${justification}`
+  );
+
+  return req;
+}
+
+export function createRisk(data: Omit<RiskRecord, "id" | "risk_score" | "criticality" | "created_at">, userName: string): RiskRecord {
+  const db = readDatabase();
+  const score = data.probability * data.impact;
+  const criticality: RiskRecord["criticality"] = score >= 15 ? "Crítico" : score >= 8 ? "Médio" : "Baixo";
+
+  const newRisk: RiskRecord = {
+    ...data,
+    id: `risk-${Date.now()}`,
+    risk_score: score,
+    criticality,
+    created_at: new Date().toISOString()
+  };
+
+  db.risks.unshift(newRisk);
+  writeDatabase(db);
+
+  recordAuditLog(
+    data.organization_id,
+    userName,
+    "CREATE_RISK",
+    "RISK",
+    newRisk.id,
+    `Risco "${newRisk.category}" cadastrado com score ${score} (${criticality}).`
+  );
+
+  return newRisk;
+}
+
+export function createNonConformity(data: Omit<NonConformityRecord, "id" | "created_at">, userName: string): NonConformityRecord {
+  const db = readDatabase();
+  const newNc: NonConformityRecord = {
+    ...data,
+    id: `nc-${Date.now()}`,
+    created_at: new Date().toISOString()
+  };
+
+  db.nonconformities.unshift(newNc);
+  writeDatabase(db);
+
+  recordAuditLog(
+    data.organization_id,
+    userName,
+    "CREATE_NONCONFORMITY",
+    "NONCONFORMITY",
+    newNc.id,
+    `Não Conformidade ${newNc.code} registrada (Origem: ${newNc.origin}, Criticidade: ${newNc.criticality}).`
+  );
+
+  return newNc;
 }

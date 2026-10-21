@@ -25,11 +25,19 @@ import {
   ListTodo,
   Layers,
   History,
-  FolderOpen
+  FolderOpen,
+  BookOpen,
+  AlertOctagon,
+  Calendar as CalendarIcon
 } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { Symbol } from "@/components/brand/Symbol";
 import { AIAvatar } from "@/components/brand/AIAvatar";
+import { LegislationTab } from "@/components/modules/LegislationTab";
+import { RiskMatrixTab } from "@/components/modules/RiskMatrixTab";
+import { NonConformitiesTab } from "@/components/modules/NonConformitiesTab";
+import { CalendarTab } from "@/components/modules/CalendarTab";
+import { GlobalSearchModal } from "@/components/modules/GlobalSearchModal";
 
 export default function DashboardPage() {
 
@@ -44,6 +52,10 @@ export default function DashboardPage() {
     | "waste"
     | "inspections"
     | "audits"
+    | "legislation"
+    | "risks"
+    | "nonconformities"
+    | "calendar"
     | "extract"
     | "org"
     | "logs"
@@ -54,6 +66,7 @@ export default function DashboardPage() {
   const [agencyFilter, setAgencyFilter] = useState("TODOS");
   const [searchTerm, setSearchTerm] = useState("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   // Modais de Criação
   const [isNewLicenseModalOpen, setIsNewLicenseModalOpen] = useState(false);
@@ -319,6 +332,58 @@ export default function DashboardPage() {
     }
   };
 
+  const handleEvaluateRequirement = async (
+    reqId: string,
+    applicability: any,
+    complianceStatus: any,
+    justification: string
+  ) => {
+    const ok = await sendAction("EVALUATE_REQUIREMENT", {
+      requirement_id: reqId,
+      applicability,
+      compliance_status: complianceStatus,
+      justification
+    });
+    if (ok) {
+      showToast("Avaliação de conformidade salva com justificativa para auditoria.");
+    }
+  };
+
+  const handleCreateLegislation = async (data: any) => {
+    const ok = await sendAction("CREATE_LEGISLATION", data);
+    if (ok) {
+      showToast(`Norma ${data.number} cadastrada no acervo.`);
+    }
+  };
+
+  const handleCreateRequirement = async (data: any) => {
+    const ok = await sendAction("CREATE_LEGAL_REQUIREMENT", data);
+    if (ok) {
+      showToast(`Requisito legal ${data.code} vinculado com sucesso.`);
+    }
+  };
+
+  const handleCreateRisk = async (data: any) => {
+    const ok = await sendAction("CREATE_RISK", data);
+    if (ok) {
+      showToast(`Risco "${data.category}" registrado na matriz 5x5.`);
+    }
+  };
+
+  const handleCreateNC = async (data: any) => {
+    const ok = await sendAction("CREATE_NONCONFORMITY", data);
+    if (ok) {
+      showToast(`Não Conformidade ${data.code || "registrada"} salva com sucesso.`);
+    }
+  };
+
+  const handleCreateActionPlanDirect = async (data: any) => {
+    const ok = await sendAction("CREATE_ACTION_PLAN", data);
+    if (ok) {
+      showToast(`Plano de Ação 5W2H "${data.title}" homologado.`);
+    }
+  };
+
   // Se os dados estao carregando
   if (isLoading || !systemData) {
     return (
@@ -342,6 +407,11 @@ export default function DashboardPage() {
     wasteRecords = [],
     inspections = [],
     audits = [],
+    actionPlans = [],
+    legislations = [],
+    legalRequirements = [],
+    risks = [],
+    nonconformities = [],
     auditLogs = []
   } = systemData;
 
@@ -389,6 +459,18 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Botao de Busca Global (Cmd+K) */}
+            <button
+              onClick={() => setIsSearchModalOpen(true)}
+              className="flex items-center gap-2 rounded-lg border border-border bg-slate-50/80 px-3 py-1.5 text-xs text-muted hover:border-cta hover:text-primary transition-colors cursor-pointer"
+            >
+              <Search className="h-3.5 w-3.5 text-slate-400" />
+              <span className="hidden md:inline font-medium">Buscar no LIRA AI...</span>
+              <kbd className="hidden md:inline-block rounded bg-white px-1.5 py-0.5 text-[10px] font-bold text-slate-500 border border-slate-200">
+                ⌘K
+              </kbd>
+            </button>
+
             <div className="flex items-center gap-2.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs">
               <div className="h-2 w-2 rounded-full bg-environmental"></div>
               <input
@@ -486,6 +568,42 @@ export default function DashboardPage() {
             >
               <Award className="h-3.5 w-3.5" />
               <span>Auditorias e 5W2H ({audits.length})</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("legislation")}
+              className={`rounded-lg px-3 py-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "legislation" ? "bg-forest text-white shadow-xs" : "text-muted hover:bg-forest/5 hover:text-forest"
+              }`}
+            >
+              <BookOpen className="h-3.5 w-3.5" />
+              <span>Legislação & Requisitos ({legalRequirements.length})</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("risks")}
+              className={`rounded-lg px-3 py-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "risks" ? "bg-forest text-white shadow-xs" : "text-muted hover:bg-forest/5 hover:text-forest"
+              }`}
+            >
+              <AlertOctagon className="h-3.5 w-3.5" />
+              <span>Matriz 5x5 ({risks.length})</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("nonconformities")}
+              className={`rounded-lg px-3 py-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "nonconformities" ? "bg-forest text-white shadow-xs" : "text-muted hover:bg-forest/5 hover:text-forest"
+              }`}
+            >
+              <AlertTriangle className="h-3.5 w-3.5" />
+              <span>Não Conformidades ({nonconformities.length})</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("calendar")}
+              className={`rounded-lg px-3 py-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "calendar" ? "bg-forest text-white shadow-xs" : "text-muted hover:bg-forest/5 hover:text-forest"
+              }`}
+            >
+              <CalendarIcon className="h-3.5 w-3.5" />
+              <span>Calendário</span>
             </button>
             <button
               onClick={() => setActiveTab("extract")}
@@ -1188,6 +1306,47 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : null}
+
+        {activeTab === "legislation" ? (
+          <LegislationTab
+            legislations={legislations}
+            requirements={legalRequirements}
+            units={units}
+            userName={userName}
+            onEvaluateRequirement={handleEvaluateRequirement}
+            onCreateLegislation={handleCreateLegislation}
+            onCreateRequirement={handleCreateRequirement}
+          />
+        ) : null}
+
+        {activeTab === "risks" ? (
+          <RiskMatrixTab
+            risks={risks}
+            units={units}
+            userName={userName}
+            onCreateRisk={handleCreateRisk}
+          />
+        ) : null}
+
+        {activeTab === "nonconformities" ? (
+          <NonConformitiesTab
+            nonconformities={nonconformities}
+            actionPlans={actionPlans}
+            units={units}
+            userName={userName}
+            onCreateNC={handleCreateNC}
+            onCreateActionPlan={handleCreateActionPlanDirect}
+          />
+        ) : null}
+
+        {activeTab === "calendar" ? (
+          <CalendarTab
+            licenses={licenses}
+            conditions={conditions}
+            tasks={tasks}
+            audits={audits}
+          />
+        ) : null}
       </main>
 
       {/* MODAL: NOVA LICENCA */}
@@ -1869,6 +2028,13 @@ export default function DashboardPage() {
           </div>
         </div>
       ) : null}
+      {/* MODAL DE BUSCA GLOBAL (CMD+K / COMMAND PALETTE) */}
+      <GlobalSearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+        systemData={systemData}
+        onNavigateTab={(tab) => setActiveTab(tab)}
+      />
     </div>
   );
 }

@@ -1,5 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readDatabase, writeDatabase, recordAuditLog, createLicense, registerRenewalProtocol, approveCondition } from "@/lib/db/store";
+import {
+  readDatabase,
+  writeDatabase,
+  recordAuditLog,
+  createLicense,
+  registerRenewalProtocol,
+  approveCondition,
+  createLegislation,
+  createLegalRequirement,
+  evaluateRequirement,
+  createRisk,
+  createNonConformity
+} from "@/lib/db/store";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -17,6 +29,10 @@ export async function GET(request: NextRequest) {
   const inspections = db.inspections.filter((i) => i.organization_id === tenantId);
   const audits = db.audits.filter((a) => a.organization_id === tenantId);
   const actionPlans = db.action_plans.filter((p) => p.organization_id === tenantId);
+  const legislations = db.legislations || [];
+  const legalRequirements = (db.legal_requirements || []).filter((r) => r.organization_id === tenantId);
+  const risks = (db.risks || []).filter((rk) => rk.organization_id === tenantId);
+  const nonconformities = (db.nonconformities || []).filter((nc) => nc.organization_id === tenantId);
   const auditLogs = db.audit_logs.filter((l) => l.organization_id === tenantId);
 
   return NextResponse.json({
@@ -31,6 +47,10 @@ export async function GET(request: NextRequest) {
     inspections,
     audits,
     actionPlans,
+    legislations,
+    legalRequirements,
+    risks,
+    nonconformities,
     auditLogs
   });
 }
@@ -268,6 +288,90 @@ export async function POST(request: NextRequest) {
       writeDatabase(db);
       recordAuditLog(currentTenantId, currentUserName, "CREATE_ACTION_PLAN", "ACTION_PLAN", newPlan.id, `Plano de Ação 5W2H "${newPlan.title}" criado.`);
       return NextResponse.json({ success: true, action_plan: newPlan });
+    }
+
+    if (action === "CREATE_LEGISLATION") {
+      const newLeg = createLegislation({
+        legislation_type: payload.legislation_type || "RESOLUCAO",
+        number: payload.number,
+        year: Number(payload.year) || new Date().getFullYear(),
+        issuing_body: payload.issuing_body,
+        sphere: payload.sphere || "FEDERAL",
+        state: payload.state,
+        city: payload.city,
+        publication_date: payload.publication_date || new Date().toISOString().split("T")[0],
+        status: payload.status || "Vigente",
+        theme: payload.theme || "Geral",
+        summary: payload.summary,
+        official_url: payload.official_url
+      }, currentUserName);
+      return NextResponse.json({ success: true, legislation: newLeg });
+    }
+
+    if (action === "CREATE_LEGAL_REQUIREMENT") {
+      const newReq = createLegalRequirement({
+        legislation_id: payload.legislation_id,
+        organization_id: currentTenantId,
+        unit_id: payload.unit_id,
+        code: payload.code,
+        article_reference: payload.article_reference,
+        title: payload.title,
+        obligation_text: payload.obligation_text,
+        evidence_required_description: payload.evidence_required_description || "",
+        criticality: payload.criticality || "MEDIA",
+        applicability: payload.applicability || "Aplicável",
+        compliance_status: payload.compliance_status || "Pendente",
+        justification: payload.justification || "",
+        responsible_name: payload.responsible_name || currentUserName
+      }, currentUserName);
+      return NextResponse.json({ success: true, requirement: newReq });
+    }
+
+    if (action === "EVALUATE_REQUIREMENT") {
+      const evaluated = evaluateRequirement(
+        payload.requirement_id,
+        payload.applicability,
+        payload.compliance_status,
+        payload.justification,
+        currentUserName
+      );
+      if (!evaluated) {
+        return NextResponse.json({ error: "Requisito legal não encontrado" }, { status: 404 });
+      }
+      return NextResponse.json({ success: true, requirement: evaluated });
+    }
+
+    if (action === "CREATE_RISK") {
+      const newRisk = createRisk({
+        organization_id: currentTenantId,
+        unit_id: payload.unit_id,
+        category: payload.category,
+        process_description: payload.process_description,
+        probability: Number(payload.probability) || 1,
+        impact: Number(payload.impact) || 1,
+        existing_controls: payload.existing_controls || "",
+        associated_requirement_id: payload.associated_requirement_id,
+        status: payload.status || "Monitorado"
+      }, currentUserName);
+      return NextResponse.json({ success: true, risk: newRisk });
+    }
+
+    if (action === "CREATE_NONCONFORMITY") {
+      const newNc = createNonConformity({
+        organization_id: currentTenantId,
+        unit_id: payload.unit_id,
+        code: payload.code || `NC-${Date.now().toString().slice(-4)}`,
+        origin: payload.origin || "Inspeção",
+        origin_id: payload.origin_id,
+        description: payload.description,
+        root_cause: payload.root_cause || "",
+        criticality: payload.criticality || "Média",
+        responsible_name: payload.responsible_name || currentUserName,
+        deadline: payload.deadline || new Date(Date.now() + 15 * 86400000).toISOString().split("T")[0],
+        status: "Aberta",
+        action_plan_id: payload.action_plan_id
+      }, currentUserName);
+      return NextResponse.json({ success: true, nonconformity: newNc });
     }
 
     return NextResponse.json({ error: "Ação não reconhecida" }, { status: 400 });
