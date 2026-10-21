@@ -1,0 +1,287 @@
+{
+  "organizations": [
+    {
+      "id": "org-1",
+      "legal_name": "Química Paulista Indústria e Comércio S/A",
+      "trade_name": "Química Paulista S/A",
+      "national_id": "44.123.456/0001-89",
+      "type": "ENTERPRISE",
+      "status": "ACTIVE",
+      "four_eyes_approval": true,
+      "renewal_alert_days": 120,
+      "created_at": "2026-10-21T17:08:05.323Z"
+    },
+    {
+      "id": "org-2",
+      "legal_name": "Mineração Vale Verde do Brasil Ltda",
+      "trade_name": "Mineração Vale Verde",
+      "national_id": "12.987.654/0001-32",
+      "type": "MANAGED_CLIENT",
+      "status": "ACTIVE",
+      "four_eyes_approval": true,
+      "renewal_alert_days": 120,
+      "created_at": "2026-10-21T17:08:05.323Z"
+    }
+  ],
+  "units": [
+    {
+      "id": "unit-1",
+      "organization_id": "org-1",
+      "name": "Planta Industrial Paulínia",
+      "unit_type": "INDUSTRIAL_PLANT",
+      "national_id": "44.123.456/0002-60",
+      "state": "SP",
+      "city": "Paulínia",
+      "hydrographic_basin": "Bacia dos Rios Piracicaba, Capivari e Jundiaí (PCJ)",
+      "created_at": "2026-10-21T17:08:05.323Z"
+    },
+    {
+      "id": "unit-2",
+      "organization_id": "org-1",
+      "name": "Unidade Petroquímica Camaçari",
+      "unit_type": "INDUSTRIAL_PLANT",
+      "national_id": "44.123.456/0003-40",
+      "state": "BA",
+      "city": "Camaçari",
+      "hydrographic_basin": "Bacia do Rio Pojuca",
+      "created_at": "2026-10-21T17:08:05.323Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "usr-1",
+      "organization_id": "org-1",
+      "name": "João Silva",
+      "email": "consultor@verdeambiental.com.br",
+      "role": "CONSULTOR",
+      "status": "ACTIVE",
+      "created_at": "2026-10-21T17:08:05.323Z"
+    },
+    {
+      "id": "usr-2",
+      "organization_id": "org-1",
+      "name": "Mariana Costa",
+      "email": "gestor@quimicapaulista.com.br",
+      "role": "GESTOR",
+      "status": "ACTIVE",
+      "created_at": "2026-10-21T17:08:05.323Z"
+    }
+  ],
+  "licenses": [
+    {
+      "id": "lic-1",
+      "organization_id": "org-1",
+      "unit_id": "unit-1",
+      "license_type": "LO",
+      "number": "LO nº 4509/2023",
+      "process_number": "Proc. CETESB 02001.0034/20",
+      "issuer_agency": "CETESB",
+      "description": "Operação de síntese e refino de compostos orgânicos e inorgânicos com sistema de tratamento de efluentes",
+      "issue_date": "2023-11-14",
+      "expiration_date": "2026-11-14",
+      "renewal_deadline": "2026-07-17",
+      "status": "Vigente",
+      "created_at": "2026-10-21T17:08:05.323Z"
+    },
+    {
+      "id": "lic-2",
+      "organization_id": "org-1",
+      "unit_id": "unit-2",
+      "license_type": "LI",
+      "number": "LI nº 8821/2024",
+      "process_number": "Proc. INEA 19022.0011/22",
+      "issuer_agency": "INEA",
+      "description": "Instalação da nova linha automatizada de envase e tancagem de segurança química",
+      "issue_date": "2024-09-03",
+      "expiration_date": "2026-09-03",
+      "renewal_deadline": "2026-05-06",
+      "status": "Alerta Renovação",
+      "created_at": "2026-10-21T17:08:05.323Z"
+    }
+  ],
+  "conditions": [
+    {
+      "id": "cond-1",
+      "organization_id": "org-1",
+      "license_id": "lic-1",
+      "item_number": "Condicionante 2.1",
+      "description": "Apresentar laudos analíticos semestrais da eficiência da Estação de Tratamento de Efluentes (ETE) com amostragem dos pontos de lançamento E-01 e E-02.",
+      "compliance_criteria": "Laudo emitido por laboratório acreditado pelo Inmetro com parâmetros de DBO, DQO, Óleos e Graxas em conformidade com o Artigo 18 do Decreto 8.468/1976.",
+      "periodicity": "SEMIANNUAL",
+      "deadline": "2026-11-30",
+      "status": "Aguardando Revisão",
+      "evidence_name": "Laudo_Laboratorial_ETE_2026_Q3.pdf",
+      "evidence_attached": true,
+      "created_at": "2026-10-21T17:08:05.323Z"
+    },
+    {
+      "id": "cond-2",
+      "organization_id": "org-1",
+      "license_id": "lic-1",
+      "item_number": "Condicionante 2.2",
+      "description": "Realizar o monitoramento contínuo das emissões atmosféricas nas chaminés CH-01 e CH-02 com calibração anual dos sensores.",
+      "compliance_criteria": "Relatório de ensaios isocinéticos com cálculo de taxa de emissão de material particulado e SOx.",
+      "periodicity": "ANNUAL",
+      "deadline": "2026-12-15",
+      "status": "Em Andamento",
+      "evidence_attached": false,
+      "created_at": "2026-10-21T17:08:05.323Z"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task-1",
+      "organization_id": "org-1",
+      "condition_id": "cond-1",
+      "title": "Contratar coleta e análise laboratorial dos efluentes industriais",
+      "description": "Agendar com o laboratório credenciado a coleta composta de 24 horas no ponto de descarte final.",
+      "priority": "HIGH",
+      "status": "Concluída",
+      "assigned_to_name": "Carlos Ferreira (Analista)",
+      "due_date": "2026-10-10",
+      "completed_at": "2026-10-08T14:30:00Z",
+      "created_at": "2026-10-21T17:08:05.323Z"
+    },
+    {
+      "id": "task-2",
+      "organization_id": "org-1",
+      "condition_id": "cond-2",
+      "title": "Calibração dos analisadores de gases da chaminé CH-01",
+      "description": "Executar calibração metrológica semestral dos sensores ópticos de opacidade.",
+      "priority": "MEDIUM",
+      "status": "A Fazer",
+      "assigned_to_name": "Equipe de Manutenção",
+      "due_date": "2026-11-20",
+      "created_at": "2026-10-21T17:08:05.323Z"
+    }
+  ],
+  "documents": [
+    {
+      "id": "doc-1",
+      "organization_id": "org-1",
+      "file_name": "LO_CETESB_4509_2023_Oficial.pdf",
+      "document_type": "Licença Oficial",
+      "subject": "Licença de Operação Paulínia",
+      "unit_id": "unit-1",
+      "valid_until": "2026-11-14",
+      "sha256_hash": "8f4a1329cbb876ef482937ba45129ef65d8924b12c7764d89a2456e9921bcfa0",
+      "file_size_bytes": 4892011,
+      "created_by_name": "Mariana Costa",
+      "created_at": "2026-10-21T17:08:05.323Z"
+    },
+    {
+      "id": "doc-2",
+      "organization_id": "org-1",
+      "file_name": "Laudo_Laboratorial_ETE_2026_Q3.pdf",
+      "document_type": "Laudo Laboratorial",
+      "subject": "Análise de Efluentes ETE Paulínia",
+      "unit_id": "unit-1",
+      "valid_until": "2027-03-30",
+      "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "file_size_bytes": 1823904,
+      "created_by_name": "Carlos Ferreira",
+      "created_at": "2026-10-21T17:08:05.323Z"
+    }
+  ],
+  "waste_records": [
+    {
+      "id": "waste-1",
+      "organization_id": "org-1",
+      "unit_id": "unit-1",
+      "waste_code": "D001 / Resíduo Químico Inflamável",
+      "description": "Borras de destilação de solventes e tintas industriais",
+      "classification": "Classe I Perigoso",
+      "quantity": 4.8,
+      "unit_of_measure": "toneladas",
+      "transporter_name": "TransLog Ambiental Express Ltda (Licença IBAMA 9912)",
+      "destination_company": "EcoDestruição e Coprocessamento Paulínia S/A",
+      "destination_type": "Coprocessamento",
+      "mtr_number": "MTR-SP-2026-0044192",
+      "cdf_number": "CDF-2026-99014",
+      "status": "Destinado com CDF",
+      "created_at": "2026-10-21T17:08:05.323Z"
+    },
+    {
+      "id": "waste-2",
+      "organization_id": "org-1",
+      "unit_id": "unit-1",
+      "waste_code": "Efluente Não Inerte Tratado",
+      "description": "Lodo desidratado prensado da estação físico-química da ETE",
+      "classification": "Classe IIA Não Inerte",
+      "quantity": 12.5,
+      "unit_of_measure": "toneladas",
+      "transporter_name": "Saneamento e Resíduos do Interior Ltda",
+      "destination_company": "Aterro Industrial Regional Centro-Oeste",
+      "destination_type": "Aterro Industrial",
+      "mtr_number": "MTR-SP-2026-0051189",
+      "status": "MTR Emitido",
+      "created_at": "2026-10-21T17:08:05.323Z"
+    }
+  ],
+  "inspections": [
+    {
+      "id": "insp-1",
+      "organization_id": "org-1",
+      "unit_id": "unit-1",
+      "title": "Inspeção Mensal de Bacias de Contenção e Tancagem de Químicos",
+      "inspector_name": "Carlos Ferreira",
+      "inspection_date": "2026-10-14",
+      "score_percentage": 95,
+      "total_items": 20,
+      "conformities_count": 19,
+      "deviations_count": 1,
+      "status": "Homologada",
+      "observations": "Identificado pequeno gotejamento na válvula de dreno V-04 da bacia B-02. Aberto plano de ação corretiva imediato.",
+      "created_at": "2026-10-21T17:08:05.323Z"
+    }
+  ],
+  "audits": [
+    {
+      "id": "aud-1",
+      "organization_id": "org-1",
+      "unit_id": "unit-1",
+      "scope": "Auditoria Interna de Conformidade Legal e Requisitos Ambientais",
+      "standard": "ISO 14001",
+      "lead_auditor": "Renata Vasconcelos (Auditora Líder)",
+      "audit_date": "2026-09-28",
+      "findings_summary": {
+        "conformities": 42,
+        "opportunities_for_improvement": 3,
+        "minor_non_conformities": 1,
+        "major_non_conformities": 0
+      },
+      "status": "Ações Corretivas em Aberto",
+      "created_at": "2026-10-21T17:08:05.323Z"
+    }
+  ],
+  "action_plans": [
+    {
+      "id": "ap-1",
+      "organization_id": "org-1",
+      "origin_type": "INSPECAO",
+      "origin_id": "insp-1",
+      "title": "Substituição e vedação da válvula V-04 da Bacia B-02",
+      "what": "Substituir junta de vedação e reapertar flange da válvula V-04",
+      "why": "Eliminar risco de gotejamento de efluente oleoso no solo da bacia",
+      "where": "Bacia de Contenção B-02 do Parque de Tancagem",
+      "who": "Engenharia de Manutenção Mecânica (Líder Marcos)",
+      "when_deadline": "2026-10-25",
+      "how": "Isolar a linha, purgar a tubulação e aplicar gaxeta de teflon resistente a solvente",
+      "how_much": "R$ 450,00",
+      "status": "Em Implementação",
+      "created_at": "2026-10-21T17:08:05.323Z"
+    }
+  ],
+  "audit_logs": [
+    {
+      "id": "log-1",
+      "organization_id": "org-1",
+      "user_name": "Sistema LIRA AI",
+      "action": "INITIAL_SEED",
+      "entity_type": "DATABASE",
+      "entity_id": "org-1",
+      "details": "Banco de dados inicializado com sucesso para operação.",
+      "timestamp": "2026-10-21T17:08:05.323Z"
+    }
+  ]
+}
