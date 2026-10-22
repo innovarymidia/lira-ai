@@ -38,6 +38,8 @@ import { RiskMatrixTab } from "@/components/modules/RiskMatrixTab";
 import { NonConformitiesTab } from "@/components/modules/NonConformitiesTab";
 import { CalendarTab } from "@/components/modules/CalendarTab";
 import { ChecklistsTab } from "@/components/modules/ChecklistsTab";
+import { WasteTab } from "@/components/modules/WasteTab";
+import { LiraExtractTab } from "@/components/modules/LiraExtractTab";
 import { GlobalSearchModal } from "@/components/modules/GlobalSearchModal";
 
 export default function DashboardPage() {
@@ -417,6 +419,29 @@ export default function DashboardPage() {
     }
   };
 
+  const handleCreateWasteDirect = async (data: any) => {
+    const ok = await sendAction("CREATE_WASTE_RECORD", data);
+    return ok;
+  };
+
+  const handleCreateSupplier = async (data: any) => {
+    const ok = await sendAction("CREATE_SUPPLIER", data);
+    return ok;
+  };
+
+  const handleUpdateSupplierLicense = async (data: any) => {
+    const ok = await sendAction("UPDATE_SUPPLIER_LICENSE", data);
+    return ok;
+  };
+
+  const handleCreateConditionDirect = async (conditionData: any) => {
+    const ok = await sendAction("CREATE_CONDITION", conditionData);
+    if (ok) {
+      showToast(`Condicionante ${conditionData.item_number} homologada e gravada com sucesso.`);
+    }
+    return ok;
+  };
+
   // Se os dados estao carregando
   if (isLoading || !systemData) {
     return (
@@ -446,6 +471,8 @@ export default function DashboardPage() {
     risks = [],
     nonconformities = [],
     checklists = [],
+    suppliers = [],
+    wasteTypes = [],
     auditLogs = []
   } = systemData;
 
@@ -1102,66 +1129,16 @@ export default function DashboardPage() {
 
         {/* ABA RESIDUOS E MTR (RES) */}
         {activeTab === "waste" ? (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold text-primary">Gestão de Resíduos e Destinação (MTR/CDF)</h2>
-                <p className="text-xs text-slate-500">Conformidade com a ABNT NBR 10.004, Manifesto de Transporte e Certificado de Destinação Final.</p>
-              </div>
-              <button onClick={() => setIsNewWasteModalOpen(true)} className="btn-primary text-xs">
-                <Plus className="h-3.5 w-3.5" />
-                <span>Nova Movimentação de Resíduo</span>
-              </button>
-            </div>
-
-            <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
-              <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
-                <thead className="bg-slate-50 font-bold text-slate-700">
-                  <tr>
-                    <th className="px-4 py-3">Código e Descrição</th>
-                    <th className="px-4 py-3">Classificação</th>
-                    <th className="px-4 py-3">Quantidade</th>
-                    <th className="px-4 py-3">Transportador e Destino</th>
-                    <th className="px-4 py-3">MTR e CDF</th>
-                    <th className="px-4 py-3">Situação</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 bg-white">
-                  {wasteRecords.map((w: any) => (
-                    <tr key={w.id} className="hover:bg-slate-50">
-                      <td className="px-4 py-3 font-bold text-primary">
-                        <div>{w.waste_code}</div>
-                        <span className="text-[11px] font-normal text-slate-600">{w.description}</span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded font-bold text-[10px] ${
-                          w.classification === "Classe I Perigoso" ? "bg-rose-100 text-rose-800" : "bg-slate-100 text-slate-800"
-                        }`}>
-                          {w.classification}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 font-semibold">{w.quantity} {w.unit_of_measure}</td>
-                      <td className="px-4 py-3 text-slate-600">
-                        <div>{w.transporter_name}</div>
-                        <div className="text-[11px] text-slate-400">Destino: {w.destination_company} ({w.destination_type})</div>
-                      </td>
-                      <td className="px-4 py-3 font-mono text-[11px]">
-                        <div>MTR: {w.mtr_number}</div>
-                        <div className="text-emerald-700">{w.cdf_number ? `CDF: ${w.cdf_number}` : "Aguardando CDF"}</div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          w.status === "Destinado com CDF" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
-                        }`}>
-                          {w.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <WasteTab
+            wasteRecords={wasteRecords}
+            suppliers={suppliers}
+            wasteTypes={wasteTypes}
+            units={units}
+            userName={userName}
+            onCreateWaste={handleCreateWasteDirect}
+            onCreateSupplier={handleCreateSupplier}
+            onUpdateSupplierLicense={handleUpdateSupplierLicense}
+          />
         ) : null}
 
         {/* ABA INSPECOES E CHECKLISTS MOBILE-READY (INS) */}
@@ -1224,61 +1201,11 @@ export default function DashboardPage() {
 
         {/* ABA LIRA EXTRACT (IA) */}
         {activeTab === "extract" ? (
-          <div className="rounded-2xl border border-border bg-white p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <div>
-                <div className="badge-ai">
-                  <AIAvatar size={16} isProcessing={true} />
-                  <span>Extração Assistida por IA com Grounding Textual</span>
-                </div>
-                <h3 className="text-lg font-bold text-forest mt-1.5">Conferência em Tela Dividida (Split-Screen)</h3>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="rounded-xl border border-border bg-background p-4 space-y-3 font-mono text-xs">
-                <span className="font-bold text-forest block border-b border-border pb-1 font-sans">Documento PDF da Licença CETESB nº 4509/2023 (Pág. 3)</span>
-                <p className="text-muted">
-                  Artigo 8º: O empreendimento deverá implantar sistema de recirculação de águas pluviais...
-                </p>
-                <div className="bg-cerrado/10 border border-cerrado/40 p-2.5 rounded text-forest font-semibold">
-                  [Cláusula Identificada pela IA]: "Artigo 9º: Fica o titular obrigado a comprovar semestralmente a destinação de 100% dos resíduos perigosos através do sistema SIGOR com anexação de CDFs."
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-digital/40 bg-digital/5 p-4 space-y-3">
-                <div className="flex items-center justify-between border-b border-digital/30 pb-1">
-                  <span className="font-bold text-forest text-xs">Condicionante Estruturada pela IA</span>
-                  <span className="text-[10px] uppercase font-bold text-environmental bg-environmental/15 px-2 py-0.5 rounded">Sugestão Preliminar</span>
-                </div>
-                <div className="bg-white p-3.5 rounded-lg border border-border space-y-2 text-xs">
-                  <span className="font-bold text-forest">Condicionante 9.1: Destinação de Resíduos Perigosos</span>
-                  <p className="text-muted">Comprovar semestralmente a destinação correta via SIGOR com anexação de CDFs.</p>
-                  <p className="text-[11px] text-muted">Periodicidade: Semestral | Prazo Sugerido: 30/11/2026</p>
-                </div>
-                <button
-                  onClick={async () => {
-                    const ok = await sendAction("CREATE_CONDITION", {
-                      license_id: licenses[0]?.id || "lic-1",
-                      item_number: "Condicionante 9.1 (Via IA)",
-                      description: "Comprovar semestralmente a destinação correta de resíduos perigosos via SIGOR com anexação de CDFs.",
-                      compliance_criteria: "Apresentação de CDF emitido pelo destinador com código MTR validado.",
-                      periodicity: "SEMIANNUAL",
-                      deadline: "2026-11-30"
-                    });
-                    if (ok) {
-                      showToast("Condicionante extraída por IA validada e gravada com sucesso no banco de dados.");
-                      setActiveTab("conditions");
-                    }
-                  }}
-                  className="btn-primary w-full py-2 text-xs font-semibold"
-                >
-                  <Check className="h-4 w-4" />
-                  <span>Validar e Gravar no Banco de Dados da Empresa</span>
-                </button>
-              </div>
-            </div>
-          </div>
+          <LiraExtractTab
+            licenses={licenses}
+            userName={userName}
+            onCreateCondition={handleCreateConditionDirect}
+          />
         ) : null}
 
 

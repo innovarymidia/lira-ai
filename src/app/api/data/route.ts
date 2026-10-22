@@ -12,7 +12,10 @@ import {
   createRisk,
   createNonConformity,
   createChecklist,
-  syncInspectionBatch
+  syncInspectionBatch,
+  createWasteRecord,
+  createSupplier,
+  updateSupplierLicense
 } from "@/lib/db/store";
 
 export async function GET(request: NextRequest) {
@@ -55,6 +58,8 @@ export async function GET(request: NextRequest) {
     risks,
     nonconformities,
     checklists,
+    suppliers: (db.suppliers || []).filter((s) => s.organization_id === tenantId),
+    wasteTypes: db.waste_types || [],
     auditLogs
   });
 }
@@ -202,27 +207,64 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "CREATE_WASTE_RECORD") {
-      const newWaste = {
-        id: `waste-${Date.now()}`,
-        organization_id: currentTenantId,
-        unit_id: payload.unit_id,
-        waste_code: payload.waste_code,
-        description: payload.description,
-        classification: payload.classification || "Classe I Perigoso",
-        quantity: Number(payload.quantity),
-        unit_of_measure: payload.unit_of_measure || "toneladas",
-        transporter_name: payload.transporter_name,
-        destination_company: payload.destination_company,
-        destination_type: payload.destination_type || "Coprocessamento",
-        mtr_number: payload.mtr_number,
-        cdf_number: payload.cdf_number || "",
-        status: payload.cdf_number ? ("Destinado com CDF" as const) : ("MTR Emitido" as const),
-        created_at: new Date().toISOString()
-      };
-      db.waste_records.push(newWaste);
-      writeDatabase(db);
-      recordAuditLog(currentTenantId, currentUserName, "CREATE_WASTE", "WASTE", newWaste.id, `Expedição de resíduo MTR ${newWaste.mtr_number} (${newWaste.description}) registrada.`);
-      return NextResponse.json({ success: true, waste: newWaste });
+      try {
+        const newWaste = createWasteRecord(
+          {
+            organization_id: currentTenantId,
+            unit_id: payload.unit_id,
+            waste_code: payload.waste_code,
+            description: payload.description,
+            classification: payload.classification || "Classe I Perigoso",
+            quantity: Number(payload.quantity),
+            unit_of_measure: payload.unit_of_measure || "toneladas",
+            transporter_name: payload.transporter_name,
+            transporter_id: payload.transporter_id,
+            destination_company: payload.destination_company,
+            destination_supplier_id: payload.destination_supplier_id,
+            destination_type: payload.destination_type || "Coprocessamento",
+            mtr_number: payload.mtr_number,
+            cdf_number: payload.cdf_number || "",
+            cdf_issue_date: payload.cdf_issue_date || ""
+          },
+          currentUserName
+        );
+        return NextResponse.json({ success: true, waste: newWaste });
+      } catch (err: any) {
+        return NextResponse.json({ error: err.message || "Erro ao registrar resíduo" }, { status: 422 });
+      }
+    }
+
+    if (action === "CREATE_SUPPLIER") {
+      const newSup = createSupplier(
+        {
+          organization_id: currentTenantId,
+          corporate_name: payload.corporate_name,
+          trade_name: payload.trade_name,
+          national_id: payload.national_id,
+          role: payload.role || "TRANSPORTADOR",
+          license_number: payload.license_number,
+          license_agency: payload.license_agency || "CETESB",
+          license_expiration_date: payload.license_expiration_date,
+          license_status: payload.license_status || "VIGENTE",
+          is_active: payload.is_active ?? true
+        },
+        currentUserName
+      );
+      return NextResponse.json({ success: true, supplier: newSup });
+    }
+
+    if (action === "UPDATE_SUPPLIER_LICENSE") {
+      const updated = updateSupplierLicense(
+        payload.supplier_id,
+        payload.license_number,
+        payload.license_expiration_date,
+        payload.license_status || "VIGENTE",
+        currentUserName
+      );
+      if (!updated) {
+        return NextResponse.json({ error: "Fornecedor não encontrado" }, { status: 404 });
+      }
+      return NextResponse.json({ success: true, supplier: updated });
     }
 
     if (action === "CREATE_INSPECTION") {

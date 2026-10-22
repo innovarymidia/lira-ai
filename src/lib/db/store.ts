@@ -111,13 +111,41 @@ export interface WasteRecord {
   quantity: number;
   unit_of_measure: "kg" | "toneladas" | "m3";
   transporter_name: string;
+  transporter_id?: string;
   destination_company: string;
+  destination_supplier_id?: string;
   destination_type: "Reciclagem" | "Coprocessamento" | "Incineração" | "Aterro Industrial";
   mtr_number: string;
   cdf_number?: string;
+  cdf_issue_date?: string;
   status: "Aguardando MTR" | "MTR Emitido" | "Destinado com CDF";
   created_at: string;
 }
+
+export interface SupplierRecord {
+  id: string;
+  organization_id: string;
+  corporate_name: string;
+  trade_name: string;
+  national_id: string;
+  role: "TRANSPORTADOR" | "DESTINADOR" | "AMBOS";
+  license_number: string;
+  license_agency: string;
+  license_expiration_date: string;
+  license_status: "VIGENTE" | "VENCIDA" | "EM_RENOVACAO";
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface WasteTypeRecord {
+  id: string;
+  code_ibama: string;
+  description: string;
+  hazard_class: "Classe I Perigoso" | "Classe IIA Não Inerte" | "Classe IIB Inerte";
+  physical_state: "Sólido" | "Líquido" | "Semissólido" | "Pastoso";
+  default_unit: "toneladas" | "kg" | "m3";
+}
+
 
 export interface InspectionRecord {
   id: string;
@@ -288,6 +316,8 @@ export interface LiraDatabaseSchema {
   risks: RiskRecord[];
   nonconformities: NonConformityRecord[];
   checklists: ChecklistRecord[];
+  suppliers: SupplierRecord[];
+  waste_types: WasteTypeRecord[];
   audit_logs: AuditLogRecord[];
 }
 
@@ -851,6 +881,106 @@ function getInitialDatabase(): LiraDatabaseSchema {
         created_at: new Date().toISOString()
       }
     ],
+    suppliers: [
+      {
+        id: "sup-1",
+        organization_id: defaultOrgId,
+        corporate_name: "TransAmbiental Logística e Transporte de Cargas Perigosas Ltda",
+        trade_name: "TransAmbiental Log",
+        national_id: "12.345.678/0001-90",
+        role: "TRANSPORTADOR",
+        license_number: "LO CETESB nº 34091/2023",
+        license_agency: "CETESB",
+        license_expiration_date: "2027-10-15",
+        license_status: "VIGENTE",
+        is_active: true,
+        created_at: new Date().toISOString()
+      },
+      {
+        id: "sup-2",
+        organization_id: defaultOrgId,
+        corporate_name: "EcoCoprocessamento e Valorização de Resíduos Brasil S.A.",
+        trade_name: "EcoCoprocessamento Brasil",
+        national_id: "98.765.432/0001-10",
+        role: "DESTINADOR",
+        license_number: "LO CETESB nº 88201/2022",
+        license_agency: "CETESB",
+        license_expiration_date: "2028-05-20",
+        license_status: "VIGENTE",
+        is_active: true,
+        created_at: new Date().toISOString()
+      },
+      {
+        id: "sup-3",
+        organization_id: defaultOrgId,
+        corporate_name: "Vargas & Filhos Coletas e Transportes Industriais Ltda",
+        trade_name: "Vargas Resíduos Industriais (Licença Vencida)",
+        national_id: "44.555.666/0001-22",
+        role: "TRANSPORTADOR",
+        license_number: "LO FEAM nº 1109/2021",
+        license_agency: "FEAM",
+        license_expiration_date: "2026-08-10",
+        license_status: "VENCIDA",
+        is_active: false,
+        created_at: new Date().toISOString()
+      },
+      {
+        id: "sup-4",
+        organization_id: defaultOrgId,
+        corporate_name: "Aterro Sanitário e Industrial Vale Verde S.A.",
+        trade_name: "Aterro Vale Verde (Licença Vencida)",
+        national_id: "55.666.777/0001-33",
+        role: "DESTINADOR",
+        license_number: "LO IAT nº 4410/2020",
+        license_agency: "IAT",
+        license_expiration_date: "2026-06-01",
+        license_status: "VENCIDA",
+        is_active: false,
+        created_at: new Date().toISOString()
+      }
+    ],
+    waste_types: [
+      {
+        id: "wt-1",
+        code_ibama: "13 02 05*",
+        description: "Óleos de motor, de engrenagem e de lubrificação não clorados à base de minerais",
+        hazard_class: "Classe I Perigoso",
+        physical_state: "Líquido",
+        default_unit: "toneladas"
+      },
+      {
+        id: "wt-2",
+        code_ibama: "15 01 10*",
+        description: "Embalagens contendo resíduos de substâncias perigosas ou por elas contaminadas",
+        hazard_class: "Classe I Perigoso",
+        physical_state: "Sólido",
+        default_unit: "toneladas"
+      },
+      {
+        id: "wt-3",
+        code_ibama: "08 01 11*",
+        description: "Resíduos de tintas e vernizes contendo solventes orgânicos ou outras substâncias perigosas",
+        hazard_class: "Classe I Perigoso",
+        physical_state: "Pastoso",
+        default_unit: "toneladas"
+      },
+      {
+        id: "wt-4",
+        code_ibama: "19 08 05",
+        description: "Lodos do tratamento de efluentes industriais (físico-químico e biológico)",
+        hazard_class: "Classe IIA Não Inerte",
+        physical_state: "Semissólido",
+        default_unit: "toneladas"
+      },
+      {
+        id: "wt-5",
+        code_ibama: "20 03 01",
+        description: "Mistura de resíduos municipais e comerciais não perigosos",
+        hazard_class: "Classe IIB Inerte",
+        physical_state: "Sólido",
+        default_unit: "toneladas"
+      }
+    ],
     audit_logs: [
       {
         id: "log-1",
@@ -892,6 +1022,12 @@ export function readDatabase(): LiraDatabaseSchema {
     }
     if (!parsed.checklists || parsed.checklists.length === 0) {
       parsed.checklists = initial.checklists;
+    }
+    if (!parsed.suppliers || parsed.suppliers.length === 0) {
+      parsed.suppliers = initial.suppliers;
+    }
+    if (!parsed.waste_types || parsed.waste_types.length === 0) {
+      parsed.waste_types = initial.waste_types;
     }
 
     return parsed;
@@ -1245,3 +1381,103 @@ export function syncInspectionBatch(
 
   return { syncedCount, createdNCsCount };
 }
+
+export function createWasteRecord(
+  data: Omit<WasteRecord, "id" | "status" | "created_at">,
+  userName: string
+): WasteRecord {
+  const db = readDatabase();
+
+  // INVARIANTE LEGAL 5.3: Trava de fornecedor sem licença válida para Resíduos Perigosos (Classe I)
+  if (data.classification === "Classe I Perigoso") {
+    if (data.transporter_id) {
+      const transporter = db.suppliers?.find((s) => s.id === data.transporter_id);
+      if (transporter && (transporter.license_status === "VENCIDA" || new Date(transporter.license_expiration_date) < new Date())) {
+        throw new Error(
+          `BLOQUEIO LEGAL (Invariante 5.3): O transportador "${transporter.trade_name}" está com a Licença Ambiental (${transporter.license_number}) VENCIDA. Emissão de MTR bloqueada para resíduo Classe I.`
+        );
+      }
+    }
+    if (data.destination_supplier_id) {
+      const destination = db.suppliers?.find((s) => s.id === data.destination_supplier_id);
+      if (destination && (destination.license_status === "VENCIDA" || new Date(destination.license_expiration_date) < new Date())) {
+        throw new Error(
+          `BLOQUEIO LEGAL (Invariante 5.3): O destinador final "${destination.trade_name}" está com a Licença Ambiental (${destination.license_number}) VENCIDA. Destinação bloqueada para resíduo Classe I.`
+        );
+      }
+    }
+  }
+
+  const newWaste: WasteRecord = {
+    ...data,
+    id: `waste-${Date.now()}`,
+    status: data.cdf_number ? "Destinado com CDF" : "MTR Emitido",
+    created_at: new Date().toISOString()
+  };
+
+  db.waste_records.unshift(newWaste);
+  writeDatabase(db);
+  recordAuditLog(
+    newWaste.organization_id,
+    userName,
+    "CREATE_WASTE_RECORD",
+    "WASTE",
+    newWaste.id,
+    `MTR ${newWaste.mtr_number} expedido para ${newWaste.description} (${newWaste.quantity} ${newWaste.unit_of_measure}). Transportador: ${newWaste.transporter_name}.`
+  );
+
+  return newWaste;
+}
+
+export function createSupplier(
+  data: Omit<SupplierRecord, "id" | "created_at">,
+  userName: string
+): SupplierRecord {
+  const db = readDatabase();
+  const newSupplier: SupplierRecord = {
+    ...data,
+    id: `sup-${Date.now()}`,
+    created_at: new Date().toISOString()
+  };
+  if (!db.suppliers) db.suppliers = [];
+  db.suppliers.unshift(newSupplier);
+  writeDatabase(db);
+  recordAuditLog(
+    newSupplier.organization_id,
+    userName,
+    "CREATE_SUPPLIER",
+    "SUPPLIER",
+    newSupplier.id,
+    `Fornecedor ambiental "${newSupplier.trade_name}" (${newSupplier.role}) cadastrado com licença ${newSupplier.license_number}.`
+  );
+  return newSupplier;
+}
+
+export function updateSupplierLicense(
+  supplierId: string,
+  licenseNumber: string,
+  expirationDate: string,
+  status: "VIGENTE" | "VENCIDA" | "EM_RENOVACAO",
+  userName: string
+): SupplierRecord | null {
+  const db = readDatabase();
+  const sup = db.suppliers?.find((s) => s.id === supplierId);
+  if (!sup) return null;
+
+  sup.license_number = licenseNumber;
+  sup.license_expiration_date = expirationDate;
+  sup.license_status = status;
+  sup.is_active = status === "VIGENTE" || status === "EM_RENOVACAO";
+
+  writeDatabase(db);
+  recordAuditLog(
+    sup.organization_id,
+    userName,
+    "UPDATE_SUPPLIER_LICENSE",
+    "SUPPLIER",
+    sup.id,
+    `Licença do fornecedor "${sup.trade_name}" atualizada: ${licenseNumber}, validade: ${expirationDate}, status: ${status}.`
+  );
+  return sup;
+}
+

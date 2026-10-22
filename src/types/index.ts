@@ -254,3 +254,31 @@ export interface Checklist {
   questions: ChecklistQuestion[];
   created_at: string;
 }
+
+export type SupplierRole = "TRANSPORTADOR" | "DESTINADOR" | "AMBOS";
+export type SupplierLicenseStatus = "VIGENTE" | "VENCIDA" | "EM_RENOVACAO";
+
+export interface Supplier {
+  id: string;
+  organization_id: string;
+  corporate_name: string;
+  trade_name: string;
+  national_id: string;
+  role: SupplierRole;
+  license_number: string;
+  license_agency: string;
+  license_expiration_date: string;
+  license_status: SupplierLicenseStatus;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface WasteType {
+  id: string;
+  code_ibama: string;
+  description: string;
+  hazard_class: "Classe I Perigoso" | "Classe IIA Não Inerte" | "Classe IIB Inerte";
+  physical_state: "Sólido" | "Líquido" | "Semissólido" | "Pastoso";
+  default_unit: "toneladas" | "kg" | "m3";
+}
+

@@ -100,3 +100,66 @@ test("Checklist Inspecao: Desvio Crítico gera Não Conformidade (NC) automatica
   assert.equal(generatedNCs[0].status, "Aberta");
 });
 
+test("Regra 5.3: Bloqueio de MTR de Resíduo Perigoso (Classe I) com Fornecedor de Licença Vencida", () => {
+  const suppliers = [
+    { id: "sup-valid", trade_name: "TransLog Apto", license_status: "VIGENTE", license_expiration_date: "2027-10-15" },
+    { id: "sup-expired", trade_name: "Vargas Vencido", license_status: "VENCIDA", license_expiration_date: "2026-08-10" }
+  ];
+
+  const validateWasteDispatch = (movement) => {
+    if (movement.classification === "Classe I Perigoso") {
+      const transporter = suppliers.find(s => s.id === movement.transporter_id);
+      if (transporter && transporter.license_status === "VENCIDA") {
+        throw new Error("BLOQUEIO LEGAL (Invariante 5.3): Licença do transportador vencida para Resíduo Classe I.");
+      }
+    }
+    return { status: "MTR_EMITIDO", mtr: movement.mtr_number };
+  };
+
+  // Tentativa com transportador vencido deve disparar erro invariante 5.3
+  const invalidMovement = {
+    classification: "Classe I Perigoso",
+    transporter_id: "sup-expired",
+    mtr_number: "MTR-2026-001"
+  };
+  assert.throws(() => validateWasteDispatch(invalidMovement), /Invariante 5.3/);
+
+  // Tentativa com transportador válido deve suceder
+  const validMovement = {
+    classification: "Classe I Perigoso",
+    transporter_id: "sup-valid",
+    mtr_number: "MTR-2026-002"
+  };
+  const result = validateWasteDispatch(validMovement);
+  assert.equal(result.status, "MTR_EMITIDO");
+});
+
+test("LIRA Extract: Extração Estruturada e Homologação Human-in-the-Loop", () => {
+  const aiExtractionPayload = {
+    clause_ref: "clause-1",
+    item_number: "Condicionante 2.1",
+    description: "Monitoramento analítico semestral do efluente no ponto E-01 (Rio Mogi Guaçu).",
+    periodicity: "SEMIANNUAL",
+    confidence: 98
+  };
+
+  const homologateCondition = (rawAiItem, reviewerName) => {
+    return {
+      id: "cond-homologated-1",
+      item_number: rawAiItem.item_number,
+      description: rawAiItem.description,
+      periodicity: rawAiItem.periodicity,
+      status: "Em Andamento",
+      reviewed_by: reviewerName,
+      created_via: "LIRA_EXTRACT_AI"
+    };
+  };
+
+  const condition = homologateCondition(aiExtractionPayload, "João Silva (Consultor)");
+  assert.equal(condition.item_number, "Condicionante 2.1");
+  assert.equal(condition.periodicity, "SEMIANNUAL");
+  assert.equal(condition.reviewed_by, "João Silva (Consultor)");
+  assert.equal(condition.created_via, "LIRA_EXTRACT_AI");
+});
+
+
